@@ -15,10 +15,10 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow all origins temporarily for testing
-        config.addAllowedOriginPattern("*");
+        //config.addAllowedOriginPattern("*");
         // For production, specify exact origins:
-        // config.addAllowedOrigin("http://192.168.84.17:8080");
-        // config.addAllowedOrigin("http://otheralloweddomain.com");
+        config.addAllowedOrigin("http://localhost:3000"); // o IP pública del frontend
+        config.addAllowedOrigin("https://lively-wave-0e0de700f.2.azurestaticapps.net"); // si ya está desplegado
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");
