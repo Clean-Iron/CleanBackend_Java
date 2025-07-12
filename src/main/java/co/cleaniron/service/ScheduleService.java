@@ -1,30 +1,79 @@
 package co.cleaniron.service;
 
 import co.cleaniron.model.Schedule;
-import co.cleaniron.model.dto.EmployeeDto;
-import co.cleaniron.model.dto.ScheduleDetailDateDto;
-import co.cleaniron.model.dto.ScheduleDetailGroupedDto;
+import co.cleaniron.model.dto.*;
+import co.cleaniron.repository.EmployeeRepository;
 import co.cleaniron.repository.ScheduleRepository;
+import co.cleaniron.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ServiceRepository serviceRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ServiceRepository serviceRepository, EmployeeRepository employeeRepository) {
         this.scheduleRepository = scheduleRepository;
+        this.serviceRepository = serviceRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public void createSchedule(Schedule schedule){
         scheduleRepository.save(schedule);
+    }
+
+    public Schedule updateSchedulePartial(Long id, ScheduleUpdateDto dto) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agenda no encontrada con ID: " + id));
+
+        if (dto.getDate() != null) {
+            schedule.setDate(dto.getDate());
+        }
+
+        if (dto.getStartHour() != null) {
+            schedule.setStartHour(dto.getStartHour());
+        }
+
+        if (dto.getEndHour() != null) {
+            schedule.setEndHour(dto.getEndHour());
+        }
+
+        if (dto.getComments() != null) {
+            schedule.setComments(dto.getComments());
+        }
+
+        if (dto.getState() != null) {
+            schedule.setState(dto.getState());
+        }
+
+        if (dto.getEmployeeDocuments() != null) {
+            schedule.setEmployees(
+                    new HashSet<>(employeeRepository.findAllById(dto.getEmployeeDocuments()))
+            );
+        }
+
+        if (dto.getIdServices() != null) {
+            schedule.setServices(
+                    new HashSet<>(serviceRepository.findAllById(dto.getIdServices()))
+            );
+        }
+
+        return scheduleRepository.save(schedule);
+    }
+
+    public void deleteSchedule(Long id){
+        scheduleRepository.deleteById(id);
     }
 
     public List<ScheduleDetailGroupedDto> getScheduleDetailsByDateCityClient(LocalDate date, String city, String name, String surname) {
@@ -67,18 +116,17 @@ public class ScheduleService {
         ScheduleDetailGroupedDto grouped = new ScheduleDetailGroupedDto(base);
 
         // Combinar todos los empleados únicos
-        List<EmployeeDto> employees = scheduleGroup.stream()
-                .filter(s -> s.getEmployeeName() != null) // Filtrar empleados nulos
-                .map(s -> new EmployeeDto(s.getEmployeeName(), s.getEmployeeSurname()))
-                .distinct() // Evitar empleados duplicados
-                .collect(Collectors.toList());
+        Set<EmployeeDto> employees = scheduleGroup.stream()
+                .filter(s -> s.getEmployeeDocument() != null) // Filtrar empleados nulos
+                .map(s -> new EmployeeDto(s.getEmployeeDocument(), s.getEmployeeName(), s.getEmployeeSurname()))
+                .collect(Collectors.toSet());
 
-        List<String> services = scheduleGroup.stream()
-                .map(ScheduleDetailDateDto::getServiceDescription)
-                .distinct()
-                .collect(Collectors.toList());
+        Set<ServiceDto> services = scheduleGroup.stream()
+                .filter(s -> s.getIdService() != null) // Filtrar empleados nulos
+                .map(s -> new ServiceDto(s.getIdService(), s.getServiceDescription()))
+                .collect(Collectors.toSet());
 
-        grouped.setServiceDescription(services);
+        grouped.setServices(services);
         grouped.setEmployees(employees);
         return grouped;
     }

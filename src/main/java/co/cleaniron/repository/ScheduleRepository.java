@@ -24,7 +24,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    c.APELLIDOS ApellidoCliente,
                    u.CIUDAD Ciudad,
                    u.DIRECCION DireccionServicio,
+                   s.ID IDServicio,
                    s.DESCRIPCION DescripcionServicio,
+                   e.NUMERO_DOCUMENTO documentoEmpleado,
                    e.NOMBRES NombreEmpleado,
                    e.APELLIDOS ApellidoEmpleado
             FROM AGENDA a
@@ -49,7 +51,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    c.APELLIDOS ApellidoCliente,
                    u.CIUDAD Ciudad,
                    u.DIRECCION DireccionServicio,
+                   s.ID IDServicio,
                    s.DESCRIPCION DescripcionServicio,
+                   e.NUMERO_DOCUMENTO documentoEmpleado,
                    e.NOMBRES NombreEmpleado,
                    e.APELLIDOS ApellidoEmpleado
             FROM AGENDA a

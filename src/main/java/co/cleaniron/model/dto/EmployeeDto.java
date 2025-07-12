@@ -7,11 +7,13 @@ import java.util.Objects;
 @Setter
 @Getter
 public class EmployeeDto {
+    private String employeeDocument;
     private String employeeName;
     private String employeeSurname;
     private String employeeCompleteName;
 
-    public EmployeeDto(String employeeName, String employeeSurname) {
+    public EmployeeDto(String employeeDocument, String employeeName, String employeeSurname) {
+        this.employeeDocument = employeeDocument;
         this.employeeName = employeeName;
         this.employeeSurname = employeeSurname;
         this.employeeCompleteName = (employeeName != null ? employeeName : "") + " " +
