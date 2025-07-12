@@ -2,8 +2,10 @@ package co.cleaniron.controller;
 
 import co.cleaniron.model.Schedule;
 import co.cleaniron.model.dto.ScheduleDetailGroupedDto;
+import co.cleaniron.model.dto.ScheduleUpdateDto;
 import co.cleaniron.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,9 +41,23 @@ public class ScheduleController {
         return ResponseEntity.ok(result);
     }
 
-
     @PostMapping("/new")
-    public void createNewSchedule(@RequestBody Schedule schedule){
+    public void createNewSchedule(@RequestBody Schedule schedule) {
         scheduleService.createSchedule(schedule);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody ScheduleUpdateDto dto) {
+        try {
+            Schedule updated = scheduleService.updateSchedulePartial(id, dto);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteSchedule(@PathVariable Long id) {
+        scheduleService.deleteSchedule(id);
     }
 }

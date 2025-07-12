@@ -6,13 +6,13 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
 public class ScheduleDetailGroupedDto {
-    // Getters y setters
     private Long id;
-    private Integer clientDocument;
+    private String clientDocument;
     private LocalDate serviceDate;
     private LocalTime startDate;
     private LocalTime endDate;
@@ -24,12 +24,11 @@ public class ScheduleDetailGroupedDto {
     private String clientCompleteName;
     private String city;
     private String addressService;
-    private List<String> serviceDescription;
-    private List<EmployeeDto> employees;
+    private Set<ServiceDto> services;
+    private Set<EmployeeDto> employees;
 
     public ScheduleDetailGroupedDto() {}
 
-    // Constructor desde ScheduleDetailDateDto
     public ScheduleDetailGroupedDto(ScheduleDetailDateDto dto) {
         this.id = dto.getId();
         this.clientDocument = dto.getClientDocument();

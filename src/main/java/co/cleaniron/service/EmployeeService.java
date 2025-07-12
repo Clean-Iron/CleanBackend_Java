@@ -28,7 +28,7 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(String id) {
-        return employeeRepository.findById(Integer.parseInt(id))
+        return employeeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empleado no encontrado con ID: " + id));
     }
 
@@ -41,7 +41,7 @@ public class EmployeeService {
     }
 
     public Employee updateEmployeePartially(String id, Map<String, Object> updates) {
-        Employee employee = employeeRepository.findById(Integer.parseInt(id))
+        Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empleado no encontrado con ID: " + id));
 
         updates.forEach((key, value) -> {
@@ -68,7 +68,7 @@ public class EmployeeService {
 
     @Transactional
     public void deactivateEmployee(String documentNumber) {
-        Optional<Employee> optEmployee = employeeRepository.findById(Integer.parseInt(documentNumber));
+        Optional<Employee> optEmployee = employeeRepository.findById(documentNumber);
         Employee employee = optEmployee.orElse(null);
         if (employee != null) {
             employee.setState(false); // Mark as inactive

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Column(name="Descripcion", nullable = false)
     private String description;
     @Column(name="Duracion", nullable = false)

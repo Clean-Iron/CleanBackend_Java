@@ -11,7 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query(value = """
         SELECT e.*
         FROM EMPLEADOS e

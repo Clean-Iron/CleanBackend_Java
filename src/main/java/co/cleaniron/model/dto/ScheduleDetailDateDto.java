@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Getter
 public class ScheduleDetailDateDto {
     private Long id;                   // ID de la agenda
-    private Integer clientDocument;  // Cambiado a Integer
+    private String clientDocument;  // Cambiado a Integer
     private LocalDate serviceDate;
     private LocalTime startDate;     // Cambiado a LocalTime según tu entidad
     private LocalTime endDate;        // Cambiado a LocalTime según tu entidad
@@ -21,14 +21,16 @@ public class ScheduleDetailDateDto {
     private String clientSurname;
     private String city;
     private String addressService;
+    private Integer idService;
     private String serviceDescription;
+    private String employeeDocument;
     private String employeeName;
     private String employeeSurname;
 
     // Constructor con casting correcto según tus entidades
     public ScheduleDetailDateDto(Object[] row) {
         this.id = castToLong(row[0]);                          // ID de la agenda
-        this.clientDocument = castToInteger(row[1]);           // NUMERO_DOCUMENTO es Integer
+        this.clientDocument = castToString(row[1]);           // NUMERO_DOCUMENTO es Integer
         this.serviceDate = castToLocalDate(row[2]);            // FECHA es LocalDate
         this.startDate = castToLocalTime(row[3]);              // FECHA_INICIO es LocalTime
         this.endDate = castToLocalTime(row[4]);                // FECHA_FIN es LocalTime
@@ -39,9 +41,11 @@ public class ScheduleDetailDateDto {
         this.clientSurname = castToString(row[9]);             // APELLIDOS es String
         this.city = castToString(row[10]);                      // CIUDAD es String
         this.addressService = castToString(row[11]);            // DIRECCION es String
-        this.serviceDescription = castToString(row[12]);        // DESCRIPCION es String
-        this.employeeName = castToString(row[13]);             // NOMBRES es String
-        this.employeeSurname = castToString(row[14]);          // APELLIDOS es String
+        this.idService = castToInteger(row[12]);                // IDSerivicio es Integer
+        this.serviceDescription = castToString(row[13]);        // DESCRIPCION es String
+        this.employeeDocument = castToString(row[14]);          //NUMERO_DOCUMENTO es String
+        this.employeeName = castToString(row[15]);             // NOMBRES es String
+        this.employeeSurname = castToString(row[16]);          // APELLIDOS es String
     }
 
     // Método helper para casting seguro a Double
