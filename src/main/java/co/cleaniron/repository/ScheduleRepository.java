@@ -71,4 +71,36 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("city") String city,
             @Param("name") String name,
             @Param("surname") String surname);
+
+    @Query(value = """
+            SELECT a.ID,
+                   a.NUMERO_DOCUMENTO documentoCliente,
+                   a.FECHA FechaServicio,
+                   a.HORA_INICIO,
+                   a.HORA_FIN,
+                   a.COMENTARIOS,
+                   c.NOMBRES NombreCliente,
+                   c.APELLIDOS ApellidoCliente,
+                   u.DIRECCION DireccionServicio,
+                   s.ID IDServicio,
+                   s.DESCRIPCION DescripcionServicio,
+                   e.NUMERO_DOCUMENTO documentoEmpleado,
+                   e.NOMBRES NombreEmpleado,
+                   e.APELLIDOS ApellidoEmpleado
+            FROM AGENDA a
+            LEFT JOIN CLIENTES c ON c.NUMERO_DOCUMENTO = a.NUMERO_DOCUMENTO
+            LEFT JOIN UBICACIONES u ON a.UBICACION_ID = u.ID
+            LEFT JOIN AGENDA_SERVICIOS ss ON a.ID = ss.AGENDA_ID
+            LEFT JOIN SERVICIOS s ON s.ID = ss.SERVICIO_ID
+            LEFT JOIN AGENDA_EMPLEADOS se ON a.ID = se.AGENDA_ID
+            LEFT JOIN EMPLEADOS e ON se.EMPLEADO_ID = e.NUMERO_DOCUMENTO
+        WHERE e.NUMERO_DOCUMENTO = :doc
+        AND EXTRACT(YEAR  FROM a.FECHA)  = EXTRACT(YEAR  FROM :filterDate)
+        AND EXTRACT(MONTH FROM a.FECHA)  = EXTRACT(MONTH FROM :filterDate)
+        """, nativeQuery = true
+    )
+    List<Object[]> findServicesFromEmployeeByMonth(
+            @Param("doc")         String doc,
+            @Param("filterDate")  LocalDate filterDate
+    );
 }

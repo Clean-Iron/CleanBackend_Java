@@ -33,9 +33,14 @@ public class EmployeeController {
         return employeeService.getAvailabilityEmployees(date,startHour,endHour,city);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public Employee getEmployeeById(@PathVariable String id) {
         return employeeService.getEmployeeById(id);
+    }
+
+    @GetMapping("/city/{city}")
+    public List<Employee> getEmployeeByCity(@PathVariable String city) {
+        return employeeService.getEmployeeByCity(city);
     }
 
     @GetMapping

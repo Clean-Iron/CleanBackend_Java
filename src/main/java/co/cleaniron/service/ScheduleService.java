@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,47 +34,8 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
     }
 
-    public Schedule updateSchedulePartial(Long id, ScheduleUpdateDto dto) {
-        Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Agenda no encontrada con ID: " + id));
-
-        if (dto.getDate() != null) {
-            schedule.setDate(dto.getDate());
-        }
-
-        if (dto.getStartHour() != null) {
-            schedule.setStartHour(dto.getStartHour());
-        }
-
-        if (dto.getEndHour() != null) {
-            schedule.setEndHour(dto.getEndHour());
-        }
-
-        if (dto.getComments() != null) {
-            schedule.setComments(dto.getComments());
-        }
-
-        if (dto.getState() != null) {
-            schedule.setState(dto.getState());
-        }
-
-        if (dto.getEmployeeDocuments() != null) {
-            schedule.setEmployees(
-                    new HashSet<>(employeeRepository.findAllById(dto.getEmployeeDocuments()))
-            );
-        }
-
-        if (dto.getIdServices() != null) {
-            schedule.setServices(
-                    new HashSet<>(serviceRepository.findAllById(dto.getIdServices()))
-            );
-        }
-
-        return scheduleRepository.save(schedule);
-    }
-
-    public void deleteSchedule(Long id){
-        scheduleRepository.deleteById(id);
+    public List<Object[]> getServicesFromEmployeeByMonth(String doc, LocalDate date){
+        return scheduleRepository.findServicesFromEmployeeByMonth(doc, date);
     }
 
     public List<ScheduleDetailGroupedDto> getScheduleDetailsByDateCityClient(LocalDate date, String city, String name, String surname) {
@@ -129,5 +91,48 @@ public class ScheduleService {
         grouped.setServices(services);
         grouped.setEmployees(employees);
         return grouped;
+    }
+
+    public Schedule updateSchedulePartial(Long id, ScheduleUpdateDto dto) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agenda no encontrada con ID: " + id));
+
+        if (dto.getDate() != null) {
+            schedule.setDate(dto.getDate());
+        }
+
+        if (dto.getStartHour() != null) {
+            schedule.setStartHour(dto.getStartHour());
+        }
+
+        if (dto.getEndHour() != null) {
+            schedule.setEndHour(dto.getEndHour());
+        }
+
+        if (dto.getComments() != null) {
+            schedule.setComments(dto.getComments());
+        }
+
+        if (dto.getState() != null) {
+            schedule.setState(dto.getState());
+        }
+
+        if (dto.getEmployeeDocuments() != null) {
+            schedule.setEmployees(
+                    new HashSet<>(employeeRepository.findAllById(dto.getEmployeeDocuments()))
+            );
+        }
+
+        if (dto.getIdServices() != null) {
+            schedule.setServices(
+                    new HashSet<>(serviceRepository.findAllById(dto.getIdServices()))
+            );
+        }
+
+        return scheduleRepository.save(schedule);
+    }
+
+    public void deleteSchedule(Long id){
+        scheduleRepository.deleteById(id);
     }
 }

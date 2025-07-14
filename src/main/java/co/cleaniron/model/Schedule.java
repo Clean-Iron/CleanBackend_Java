@@ -67,10 +67,6 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private ServiceState state;
 
-    // Opción 2: Campo calculado en tiempo real (no se guarda en BD)
-    @Transient
-    private Double calculatedServiceHours;
-
     // Métodos para cálculo automático
     @PrePersist
     @PreUpdate
@@ -78,36 +74,6 @@ public class Schedule {
         if (startHour != null && endHour != null) {
             Duration duration = Duration.between(startHour, endHour);
             this.totalServiceHours = duration.toMinutes() / 60.0;
-        }
-    }
-
-    // Getter personalizado para horas calculadas en tiempo real
-    public Double getCalculatedServiceHours() {
-        if (startHour != null && endHour != null) {
-            Duration duration = Duration.between(startHour, endHour);
-            return duration.toMinutes() / 60.0;
-        }
-        return 0.0;
-    }
-
-    // Método de utilidad para obtener horas en formato legible
-    public String getFormattedServiceHours() {
-        Double hours = getTotalServiceHours();
-        if (hours == null) {
-            hours = getCalculatedServiceHours();
-        }
-
-        if (hours == 0) {
-            return "0 horas";
-        }
-
-        int wholeHours = hours.intValue();
-        int minutes = (int) ((hours - wholeHours) * 60);
-
-        if (minutes == 0) {
-            return wholeHours + (wholeHours == 1 ? " hora" : " horas");
-        } else {
-            return wholeHours + "h " + minutes + "m";
         }
     }
 

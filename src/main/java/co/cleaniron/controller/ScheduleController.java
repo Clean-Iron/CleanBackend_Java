@@ -23,6 +23,20 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
+    @PostMapping
+    public void createNewSchedule(@RequestBody Schedule schedule) {
+        scheduleService.createSchedule(schedule);
+    }
+
+    @GetMapping("/servicesEmployee/{employeeDoc}")
+    public ResponseEntity<List<Object[]>> getServicesFromEmployeeByMonth(
+            @PathVariable("employeeDoc") String employeeDoc,
+            @RequestParam("dateService") LocalDate dateService
+    ){
+        return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, dateService));
+    }
+
+
     @GetMapping("/{dateService}")
     public ResponseEntity<List<ScheduleDetailGroupedDto>> getScheduleDetails(
             @PathVariable("dateService") LocalDate dateService,
@@ -39,11 +53,6 @@ public class ScheduleController {
         }
 
         return ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/new")
-    public void createNewSchedule(@RequestBody Schedule schedule) {
-        scheduleService.createSchedule(schedule);
     }
 
     @PatchMapping("/{id}")

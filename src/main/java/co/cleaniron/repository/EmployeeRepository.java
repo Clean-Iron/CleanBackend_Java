@@ -15,6 +15,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query(value = """
         SELECT e.*
         FROM EMPLEADOS e
+        WHERE e.CIUDAD = :city
+        """, nativeQuery = true)
+    List<Employee> findEmployeesByCity(
+            @Param("city") String city
+    );
+
+
+    @Query(value = """
+        SELECT e.*
+        FROM EMPLEADOS e
         WHERE e.CIUDAD = :city AND 
               e.NUMERO_DOCUMENTO NOT IN (
             SELECT DISTINCT ae.EMPLEADO_ID
