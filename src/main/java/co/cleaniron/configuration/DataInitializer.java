@@ -296,40 +296,50 @@ public class DataInitializer {
         schedule3.setServices(Set.of(limpiezaOficinas));
         schedule3.setDate(LocalDate.of(2025, 4, 15));
         schedule3.setStartHour(LocalTime.of(8, 0));
-        schedule3.setEndHour(LocalTime.of(10, 30));
+        schedule3.setEndHour(LocalTime.of(13, 0));
         schedule3.setState(ServiceState.CANCELADA);
 
         Schedule schedule4 = new Schedule();
-        schedule4.setClient(tecnologiaXYZ);
-        schedule4.setServiceAddress(addr2);
-        schedule4.setEmployees(Set.of(ana, carlos));
+        schedule4.setClient(corporativoABC);
+        schedule4.setServiceAddress(addr1);
+        schedule4.setEmployees(Set.of(juan, maria));
         schedule4.setServices(Set.of(limpiezaOficinas));
         schedule4.setDate(LocalDate.of(2025, 4, 15));
-        schedule4.setStartHour(LocalTime.of(11, 0));
-        schedule4.setEndHour(LocalTime.of(13, 30));
+        schedule4.setStartHour(LocalTime.of(14, 0));
+        schedule4.setEndHour(LocalTime.of(19, 0));
         schedule4.setState(ServiceState.CANCELADA);
 
         Schedule schedule5 = new Schedule();
-        schedule5.setClient(consultores123);
-        schedule5.setServiceAddress(addr3);
-        schedule5.setEmployees(Set.of(pedro, lucia));
+        schedule5.setClient(tecnologiaXYZ);
+        schedule5.setServiceAddress(addr2);
+        schedule5.setEmployees(Set.of(ana, carlos));
         schedule5.setServices(Set.of(limpiezaOficinas));
         schedule5.setDate(LocalDate.of(2025, 4, 15));
-        schedule5.setStartHour(LocalTime.of(14, 30));
-        schedule5.setEndHour(LocalTime.of(16, 0));
-        schedule5.setState(ServiceState.PROGRAMADA);
+        schedule5.setStartHour(LocalTime.of(11, 0));
+        schedule5.setEndHour(LocalTime.of(13, 30));
+        schedule5.setState(ServiceState.CANCELADA);
 
         Schedule schedule6 = new Schedule();
-        schedule6.setClient(segurosEficaces);
-        schedule6.setServiceAddress(addr4);
-        schedule6.setEmployees(Set.of(roberto, diana));
+        schedule6.setClient(consultores123);
+        schedule6.setServiceAddress(addr3);
+        schedule6.setEmployees(Set.of(pedro, lucia));
         schedule6.setServices(Set.of(limpiezaOficinas));
         schedule6.setDate(LocalDate.of(2025, 4, 15));
-        schedule6.setStartHour(LocalTime.of(17, 0));
-        schedule6.setEndHour(LocalTime.of(18, 30));
+        schedule6.setStartHour(LocalTime.of(14, 30));
+        schedule6.setEndHour(LocalTime.of(16, 0));
         schedule6.setState(ServiceState.PROGRAMADA);
 
-        scheduleRepository.saveAll(Arrays.asList(schedule1, schedule2, schedule3, schedule4, schedule5, schedule6));
+        Schedule schedule7 = new Schedule();
+        schedule7.setClient(segurosEficaces);
+        schedule7.setServiceAddress(addr4);
+        schedule7.setEmployees(Set.of(roberto, diana));
+        schedule7.setServices(Set.of(limpiezaOficinas));
+        schedule7.setDate(LocalDate.of(2025, 4, 15));
+        schedule7.setStartHour(LocalTime.of(17, 0));
+        schedule7.setEndHour(LocalTime.of(18, 30));
+        schedule7.setState(ServiceState.PROGRAMADA);
+
+        scheduleRepository.saveAll(Arrays.asList(schedule1, schedule2, schedule3, schedule4, schedule5, schedule6, schedule7));
     }
 }
 

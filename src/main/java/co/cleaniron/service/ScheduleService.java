@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,11 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
     }
 
-    public List<Object[]> getServicesFromEmployeeByMonth(String doc, LocalDate date){
-        return scheduleRepository.findServicesFromEmployeeByMonth(doc, date);
+    public List<ServicesByEmployeeDto> getServicesFromEmployeeByMonth(String doc, String year, String month){
+        List<Object[]> results = scheduleRepository.findServicesFromEmployeeByMonth(doc, year, month);
+        return results.stream()
+                .map(ServicesByEmployeeDto::new)
+                .toList();
     }
 
     public List<ScheduleDetailGroupedDto> getScheduleDetailsByDateCityClient(LocalDate date, String city, String name, String surname) {

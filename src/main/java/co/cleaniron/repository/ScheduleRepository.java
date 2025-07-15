@@ -78,6 +78,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    a.FECHA FechaServicio,
                    a.HORA_INICIO,
                    a.HORA_FIN,
+                   a.TOTAL_HORAS_SERVICIO,
                    a.COMENTARIOS,
                    c.NOMBRES NombreCliente,
                    c.APELLIDOS ApellidoCliente,
@@ -95,12 +96,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             LEFT JOIN AGENDA_EMPLEADOS se ON a.ID = se.AGENDA_ID
             LEFT JOIN EMPLEADOS e ON se.EMPLEADO_ID = e.NUMERO_DOCUMENTO
         WHERE e.NUMERO_DOCUMENTO = :doc
-        AND EXTRACT(YEAR  FROM a.FECHA)  = EXTRACT(YEAR  FROM :filterDate)
-        AND EXTRACT(MONTH FROM a.FECHA)  = EXTRACT(MONTH FROM :filterDate)
+            AND EXTRACT(YEAR  FROM a.FECHA)  = :year
+            AND EXTRACT(MONTH FROM a.FECHA)  = :month
         """, nativeQuery = true
     )
     List<Object[]> findServicesFromEmployeeByMonth(
-            @Param("doc")         String doc,
-            @Param("filterDate")  LocalDate filterDate
+            @Param("doc") String doc,
+            @Param("year") String year,
+            @Param("month") String month
     );
 }

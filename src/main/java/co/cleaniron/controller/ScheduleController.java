@@ -3,6 +3,7 @@ package co.cleaniron.controller;
 import co.cleaniron.model.Schedule;
 import co.cleaniron.model.dto.ScheduleDetailGroupedDto;
 import co.cleaniron.model.dto.ScheduleUpdateDto;
+import co.cleaniron.model.dto.ServicesByEmployeeDto;
 import co.cleaniron.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,12 @@ public class ScheduleController {
     }
 
     @GetMapping("/servicesEmployee/{employeeDoc}")
-    public ResponseEntity<List<Object[]>> getServicesFromEmployeeByMonth(
+    public ResponseEntity<List<ServicesByEmployeeDto>> getServicesFromEmployeeByMonth(
             @PathVariable("employeeDoc") String employeeDoc,
-            @RequestParam("dateService") LocalDate dateService
+            @RequestParam("year") String year,
+            @RequestParam("month") String month
     ){
-        return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, dateService));
+        return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, year, month));
     }
 
 
