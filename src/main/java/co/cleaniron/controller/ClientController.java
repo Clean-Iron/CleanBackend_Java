@@ -28,7 +28,12 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getClientWithAddresses(doc));
     }
 
-    @GetMapping("clients")
+    @GetMapping("/cities")
+    public ResponseEntity<List<String>> getCities(){
+        return ResponseEntity.ok(clientService.getCities());
+    }
+
+    @GetMapping
     public ResponseEntity<List<Client>> getAllClients(){
         return ResponseEntity.ok(clientService.getClients());
     }

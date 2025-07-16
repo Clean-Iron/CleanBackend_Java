@@ -21,4 +21,11 @@ public interface ClientRepository extends JpaRepository<Client, String> {
             JOIN UBICACIONES u ON c.NUMERO_DOCUMENTO = u.NUMERO_DOCUMENTO
             WHERE u.Ciudad = :city;""", nativeQuery = true)
     List<Client> findAllClientsWithAddressInACity(@Param("city") String city);
+
+    @Query(value = """
+            SELECT DISTINCT u.CIUDAD
+            FROM CLIENTES c
+            JOIN UBICACIONES u\s
+            ON c.NUMERO_DOCUMENTO = u.NUMERO_DOCUMENTO;""", nativeQuery = true)
+    List<String> findAllCities();
 }

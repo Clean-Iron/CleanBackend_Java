@@ -32,6 +32,10 @@ public class ClientService {
         return clientRepository.findAllClientsWithAddressInACity(city);
     }
 
+    public List<String> getCities(){
+        return clientRepository.findAllCities();
+    }
+
     public List<Client> getClients() {
         return clientRepository.findAll();
     }

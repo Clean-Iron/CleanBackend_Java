@@ -332,14 +332,24 @@ public class DataInitializer {
         Schedule schedule7 = new Schedule();
         schedule7.setClient(segurosEficaces);
         schedule7.setServiceAddress(addr4);
-        schedule7.setEmployees(Set.of(roberto, diana));
+        schedule7.setEmployees(Set.of(roberto));
         schedule7.setServices(Set.of(limpiezaOficinas));
         schedule7.setDate(LocalDate.of(2025, 4, 15));
         schedule7.setStartHour(LocalTime.of(17, 0));
         schedule7.setEndHour(LocalTime.of(18, 30));
         schedule7.setState(ServiceState.PROGRAMADA);
 
-        scheduleRepository.saveAll(Arrays.asList(schedule1, schedule2, schedule3, schedule4, schedule5, schedule6, schedule7));
+        Schedule schedule8 = new Schedule();
+        schedule8.setClient(segurosEficaces);
+        schedule8.setServiceAddress(addr4);
+        schedule8.setEmployees(Set.of(roberto, diana));
+        schedule8.setServices(Set.of(limpiezaOficinas));
+        schedule8.setDate(LocalDate.of(2025, 4, 15));
+        schedule8.setStartHour(LocalTime.of(7, 0));
+        schedule8.setEndHour(LocalTime.of(15, 0));
+        schedule8.setState(ServiceState.PROGRAMADA);
+
+        scheduleRepository.saveAll(Arrays.asList(schedule1, schedule2, schedule3, schedule4, schedule5, schedule6, schedule7, schedule8));
     }
 }
 
