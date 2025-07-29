@@ -14,27 +14,26 @@ import java.util.List;
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query(value = """
         SELECT e.*
-        FROM EMPLEADOS e
-        WHERE e.CIUDAD = :city
+        FROM empleados e
+        WHERE e.ciudad = :city
         """, nativeQuery = true)
     List<Employee> findEmployeesByCity(
             @Param("city") String city
     );
 
-
     @Query(value = """
         SELECT e.*
-        FROM EMPLEADOS e
-        WHERE e.CIUDAD = :city AND 
-              e.NUMERO_DOCUMENTO NOT IN (
-            SELECT DISTINCT ae.EMPLEADO_ID
-            FROM AGENDA_EMPLEADOS ae
-            INNER JOIN AGENDA a ON ae.AGENDA_ID = a.ID
-            WHERE a.FECHA = :date
-              AND (a.HORA_INICIO < :endHour AND a.HORA_FIN > :startHour)
-              AND a.ESTADO != 'CANCELADA'
+        FROM empleados e
+        WHERE e.ciudad = :city AND 
+              e.numero_documento NOT IN (
+            SELECT DISTINCT ae.empleado_id
+            FROM agenda_empleados ae
+            INNER JOIN agenda a ON ae.agenda_id = a.id
+            WHERE a.fecha = :date
+              AND (a.hora_inicio < :endHour AND a.hora_fin > :startHour)
+              AND a.estado != 'CANCELADA'
         )
-        ORDER BY e.Nombres, e.Apellidos
+        ORDER BY e.nombres, e.apellidos
         """, nativeQuery = true)
     List<Employee> findAvailableEmployeesByDateStartHourEndHourCity(
             @Param("date") LocalDate date,

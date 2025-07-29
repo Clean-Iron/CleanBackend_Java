@@ -17,15 +17,15 @@ public interface ClientRepository extends JpaRepository<Client, String> {
 
     @Query(value = """
             SELECT DISTINCT c.*
-            FROM CLIENTES c
-            JOIN UBICACIONES u ON c.NUMERO_DOCUMENTO = u.NUMERO_DOCUMENTO
-            WHERE u.Ciudad = :city;""", nativeQuery = true)
+            FROM clientes c
+            JOIN ubicaciones u ON c.numero_documento = u.numero_documento
+            WHERE u.ciudad = :city;""", nativeQuery = true)
     List<Client> findAllClientsWithAddressInACity(@Param("city") String city);
 
     @Query(value = """
-            SELECT DISTINCT u.CIUDAD
-            FROM CLIENTES c
-            JOIN UBICACIONES u\s
-            ON c.NUMERO_DOCUMENTO = u.NUMERO_DOCUMENTO;""", nativeQuery = true)
+            SELECT DISTINCT u.ciudad
+            FROM clientes c
+            JOIN ubicaciones u
+            ON c.numero_documento = u.numero_documento;""", nativeQuery = true)
     List<String> findAllCities();
 }

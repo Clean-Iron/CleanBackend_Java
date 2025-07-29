@@ -12,60 +12,60 @@ import java.util.List;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query(value = """
-            SELECT a.ID,
-                   a.NUMERO_DOCUMENTO documentoCliente,
-                   a.FECHA FechaServicio,
-                   a.HORA_INICIO,
-                   a.HORA_FIN,
-                   a.TOTAL_HORAS_SERVICIO,
-                   a.ESTADO,
-                   a.COMENTARIOS,
-                   c.NOMBRES NombreCliente,
-                   c.APELLIDOS ApellidoCliente,
-                   u.CIUDAD Ciudad,
-                   u.DIRECCION DireccionServicio,
-                   s.ID IDServicio,
-                   s.DESCRIPCION DescripcionServicio,
-                   e.NUMERO_DOCUMENTO documentoEmpleado,
-                   e.NOMBRES NombreEmpleado,
-                   e.APELLIDOS ApellidoEmpleado
-            FROM AGENDA a
-            LEFT JOIN CLIENTES c ON c.NUMERO_DOCUMENTO = a.NUMERO_DOCUMENTO
-            LEFT JOIN UBICACIONES u ON a.UBICACION_ID = u.ID
-            LEFT JOIN AGENDA_SERVICIOS ss ON a.ID = ss.AGENDA_ID
-            LEFT JOIN SERVICIOS s ON s.ID = ss.SERVICIO_ID
-            LEFT JOIN AGENDA_EMPLEADOS se ON a.ID = se.AGENDA_ID
-            LEFT JOIN EMPLEADOS e ON se.EMPLEADO_ID = e.NUMERO_DOCUMENTO
-            WHERE a.FECHA = :dateService""", nativeQuery = true)
+            SELECT a.id,
+                   a.numero_documento documentoCliente,
+                   a.fecha FechaServicio,
+                   a.hora_inicio,
+                   a.hora_fin,
+                   a.total_horas_servicio,
+                   a.estado,
+                   a.comentarios,
+                   c.nombres NombreCliente,
+                   c.apellidos ApellidoCliente,
+                   u.ciudad Ciudad,
+                   u.direccion DireccionServicio,
+                   s.id IDServicio,
+                   s.descripcion DescripcionServicio,
+                   e.numero_documento documentoEmpleado,
+                   e.nombres NombreEmpleado,
+                   e.apellidos ApellidoEmpleado
+            FROM agenda a
+            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
+            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.ID
+            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
+            LEFT JOIN servicios s ON s.id = ss.servicio_id
+            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
+            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
+            WHERE a.fecha = :dateService""", nativeQuery = true)
     List<Object[]> findScheduleDetailsByDate(@Param("dateService") LocalDate dateService);
 
     @Query(value = """
-            SELECT a.ID,
-                   a.NUMERO_DOCUMENTO documentoCliente,
-                   a.FECHA FechaServicio,
-                   a.HORA_INICIO,
-                   a.HORA_FIN,
-                   a.ESTADO,
-                   a.COMENTARIOS,
-                   c.NOMBRES NombreCliente,
-                   c.APELLIDOS ApellidoCliente,
-                   u.CIUDAD Ciudad,
-                   u.DIRECCION DireccionServicio,
-                   s.ID IDServicio,
-                   s.DESCRIPCION DescripcionServicio,
-                   e.NUMERO_DOCUMENTO documentoEmpleado,
-                   e.NOMBRES NombreEmpleado,
-                   e.APELLIDOS ApellidoEmpleado
-            FROM AGENDA a
-            LEFT JOIN CLIENTES c ON c.NUMERO_DOCUMENTO = a.NUMERO_DOCUMENTO
-            LEFT JOIN UBICACIONES u ON a.UBICACION_ID = u.ID
-            LEFT JOIN AGENDA_SERVICIOS ss ON a.ID = ss.AGENDA_ID
-            LEFT JOIN SERVICIOS s ON s.ID = ss.SERVICIO_ID
-            LEFT JOIN AGENDA_EMPLEADOS se ON a.ID = se.AGENDA_ID
-            LEFT JOIN EMPLEADOS e ON se.EMPLEADO_ID = e.NUMERO_DOCUMENTO
-            WHERE a.FECHA = :dateService AND u.CIUDAD = :city
-                AND (TRIM(LOWER(c.NOMBRES)) LIKE LOWER(CONCAT('%', :name, '%'))
-                OR TRIM(LOWER(c.APELLIDOS)) LIKE LOWER(CONCAT('%', :surname, '%')));""", nativeQuery = true)
+            SELECT a.id,
+                   a.numero_documento documentoCliente,
+                   a.fecha FechaServicio,
+                   a.hora_inicio,
+                   a.hora_fin,
+                   a.estado,
+                   a.comentarios,
+                   c.nombres NombreCliente,
+                   c.apellidos ApellidoCliente,
+                   u.ciudad Ciudad,
+                   u.direccion DireccionServicio,
+                   s.id IDServicio,
+                   s.descripcion DescripcionServicio,
+                   e.numero_documento documentoEmpleado,
+                   e.nombres NombreEmpleado,
+                   e.apellidos ApellidoEmpleado
+            FROM agenda a
+            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
+            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.id
+            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
+            LEFT JOIN servicios s ON s.id = ss.servicio_id
+            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
+            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
+            WHERE a.fecha = :dateService AND u.ciudad = :city
+                AND (TRIM(LOWER(c.nombres)) LIKE LOWER(CONCAT('%', :name, '%'))
+                OR TRIM(LOWER(c.apellidos)) LIKE LOWER(CONCAT('%', :surname, '%')));""", nativeQuery = true)
     List<Object[]> findScheduleDetailsByDateCityClient(
             @Param("dateService") LocalDate dateService,
             @Param("city") String city,
@@ -73,31 +73,31 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("surname") String surname);
 
     @Query(value = """
-            SELECT a.ID,
-                   a.NUMERO_DOCUMENTO documentoCliente,
-                   a.FECHA FechaServicio,
-                   a.HORA_INICIO,
-                   a.HORA_FIN,
-                   a.TOTAL_HORAS_SERVICIO,
-                   a.COMENTARIOS,
-                   c.NOMBRES NombreCliente,
-                   c.APELLIDOS ApellidoCliente,
-                   u.DIRECCION DireccionServicio,
-                   s.ID IDServicio,
-                   s.DESCRIPCION DescripcionServicio,
-                   e.NUMERO_DOCUMENTO documentoEmpleado,
-                   e.NOMBRES NombreEmpleado,
-                   e.APELLIDOS ApellidoEmpleado
-            FROM AGENDA a
-            LEFT JOIN CLIENTES c ON c.NUMERO_DOCUMENTO = a.NUMERO_DOCUMENTO
-            LEFT JOIN UBICACIONES u ON a.UBICACION_ID = u.ID
-            LEFT JOIN AGENDA_SERVICIOS ss ON a.ID = ss.AGENDA_ID
-            LEFT JOIN SERVICIOS s ON s.ID = ss.SERVICIO_ID
-            LEFT JOIN AGENDA_EMPLEADOS se ON a.ID = se.AGENDA_ID
-            LEFT JOIN EMPLEADOS e ON se.EMPLEADO_ID = e.NUMERO_DOCUMENTO
-        WHERE e.NUMERO_DOCUMENTO = :doc
-            AND EXTRACT(YEAR  FROM a.FECHA)  = :year
-            AND EXTRACT(MONTH FROM a.FECHA)  = :month
+            SELECT a.id,
+                   a.numero_documento documentoCliente,
+                   a.fecha FechaServicio,
+                   a.hora_inicio,
+                   a.hora_fin,
+                   a.total_horas_servicio,
+                   a.comentarios,
+                   c.nombres NombreCliente,
+                   c.apellidos ApellidoCliente,
+                   u.direccion DireccionServicio,
+                   s.id IDServicio,
+                   s.descripcion DescripcionServicio,
+                   e.numero_documento documentoEmpleado,
+                   e.nombres NombreEmpleado,
+                   e.apellidos ApellidoEmpleado
+            FROM agenda a
+            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
+            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.id
+            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
+            LEFT JOIN servicios s ON s.id = ss.servicio_id
+            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
+            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
+        WHERE e.numero_documento = :doc
+            AND EXTRACT(YEAR  FROM a.fecha)  = :year
+            AND EXTRACT(MONTH FROM a.fecha)  = :month
         """, nativeQuery = true
     )
     List<Object[]> findServicesFromEmployeeByMonth(
