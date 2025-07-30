@@ -38,7 +38,6 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, year, month));
     }
 
-
     @GetMapping("/{dateService}")
     public ResponseEntity<List<ScheduleDetailGroupedDto>> getScheduleDetails(
             @PathVariable("dateService") LocalDate dateService,
@@ -48,7 +47,7 @@ public class ScheduleController {
     ) {
         List<ScheduleDetailGroupedDto> result;
 
-        if (city != null && (name != null || surname != null)) {
+        if (city != null || (name != null && surname != null)) {
             result = scheduleService.getScheduleDetailsByDateCityClient(dateService, city, name, surname);
         } else {
             result = scheduleService.getScheduleDetailsByDate(dateService);
