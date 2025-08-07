@@ -14,8 +14,8 @@ public class ScheduleDetailGroupedDto {
     private Long id;
     private String clientDocument;
     private LocalDate serviceDate;
-    private LocalTime startDate;
-    private LocalTime endDate;
+    private LocalTime startHour;
+    private LocalTime endHour;
     private double totalServiceHours;
     private String state;
     private String comments;
@@ -24,6 +24,7 @@ public class ScheduleDetailGroupedDto {
     private String clientCompleteName;
     private String city;
     private String addressService;
+    private String recurrenceType;
     private Set<ServiceDto> services;
     private Set<EmployeeDto> employees;
 
@@ -33,8 +34,8 @@ public class ScheduleDetailGroupedDto {
         this.id = dto.getId();
         this.clientDocument = dto.getClientDocument();
         this.serviceDate = dto.getServiceDate();
-        this.startDate = dto.getStartDate();
-        this.endDate = dto.getEndDate();
+        this.startHour = dto.getStartHour();
+        this.endHour = dto.getEndHour();
         this.totalServiceHours = dto.getTotalServiceHours();
         this.state = dto.getState();
         this.comments = dto.getComments();
@@ -43,5 +44,6 @@ public class ScheduleDetailGroupedDto {
         this.city = dto.getCity();
         this.clientCompleteName = dto.getNombreCompletoCliente();
         this.addressService = dto.getAddressService();
+        this.recurrenceType = dto.getRecurrenceType();
     }
 }

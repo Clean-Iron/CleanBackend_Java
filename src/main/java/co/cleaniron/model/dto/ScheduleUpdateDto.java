@@ -1,7 +1,5 @@
 package co.cleaniron.model.dto;
 
-import co.cleaniron.model.Employee;
-import co.cleaniron.model.Service;
 import co.cleaniron.model.ServiceState;
 import lombok.Getter;
 import lombok.Setter;

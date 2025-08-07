@@ -246,8 +246,8 @@ public class DataInitializer {
 
         Employee roberto = new Employee();
         roberto.setDocument("10001007");
-        roberto.setName("Roberto");
-        roberto.setSurname("López");
+        roberto.setName("Roberto Alberto");
+        roberto.setSurname("López Rodriguez");
         roberto.setPhone("555-1007");
         roberto.setEmail("roberto.lopez@cleaniron.co");
         roberto.setAddressResidence("Calle Residencial 7");
@@ -278,6 +278,7 @@ public class DataInitializer {
         schedule1.setStartHour(LocalTime.of(8, 0));
         schedule1.setEndHour(LocalTime.of(10, 30));
         schedule1.setState(ServiceState.COMPLETADA);
+        schedule1.setRecurrenceType(RecurrenceType.FRECUENTE);
 
         Schedule schedule2 = new Schedule();
         schedule2.setClient(tecnologiaXYZ);
@@ -288,6 +289,7 @@ public class DataInitializer {
         schedule2.setStartHour(LocalTime.of(11, 0));
         schedule2.setEndHour(LocalTime.of(13, 30));
         schedule2.setState(ServiceState.PROGRAMADA);
+        schedule2.setRecurrenceType(RecurrenceType.QUINCENAL);
 
         Schedule schedule3 = new Schedule();
         schedule3.setClient(corporativoABC);
@@ -298,6 +300,7 @@ public class DataInitializer {
         schedule3.setStartHour(LocalTime.of(8, 0));
         schedule3.setEndHour(LocalTime.of(13, 0));
         schedule3.setState(ServiceState.CANCELADA);
+        schedule3.setRecurrenceType(RecurrenceType.MENSUAL);
 
         Schedule schedule4 = new Schedule();
         schedule4.setClient(corporativoABC);
@@ -308,6 +311,7 @@ public class DataInitializer {
         schedule4.setStartHour(LocalTime.of(14, 0));
         schedule4.setEndHour(LocalTime.of(19, 0));
         schedule4.setState(ServiceState.CANCELADA);
+        schedule4.setRecurrenceType(RecurrenceType.PUNTUAL);
 
         Schedule schedule5 = new Schedule();
         schedule5.setClient(tecnologiaXYZ);
@@ -318,6 +322,7 @@ public class DataInitializer {
         schedule5.setStartHour(LocalTime.of(11, 0));
         schedule5.setEndHour(LocalTime.of(13, 30));
         schedule5.setState(ServiceState.CANCELADA);
+        schedule5.setRecurrenceType(RecurrenceType.FRECUENTE);
 
         Schedule schedule6 = new Schedule();
         schedule6.setClient(consultores123);
@@ -328,6 +333,7 @@ public class DataInitializer {
         schedule6.setStartHour(LocalTime.of(14, 30));
         schedule6.setEndHour(LocalTime.of(16, 0));
         schedule6.setState(ServiceState.PROGRAMADA);
+        schedule6.setRecurrenceType(RecurrenceType.MENSUAL);
 
         Schedule schedule7 = new Schedule();
         schedule7.setClient(segurosEficaces);
@@ -338,6 +344,7 @@ public class DataInitializer {
         schedule7.setStartHour(LocalTime.of(17, 0));
         schedule7.setEndHour(LocalTime.of(18, 30));
         schedule7.setState(ServiceState.PROGRAMADA);
+        schedule7.setRecurrenceType(RecurrenceType.QUINCENAL);
 
         Schedule schedule8 = new Schedule();
         schedule8.setClient(segurosEficaces);
@@ -348,6 +355,7 @@ public class DataInitializer {
         schedule8.setStartHour(LocalTime.of(7, 0));
         schedule8.setEndHour(LocalTime.of(15, 0));
         schedule8.setState(ServiceState.PROGRAMADA);
+        schedule8.setRecurrenceType(RecurrenceType.FRECUENTE);
 
         scheduleRepository.saveAll(Arrays.asList(schedule1, schedule2, schedule3, schedule4, schedule5, schedule6, schedule7, schedule8));
     }

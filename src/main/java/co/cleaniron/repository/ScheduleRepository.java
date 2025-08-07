@@ -20,6 +20,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    a.total_horas_servicio,
                    a.estado,
                    a.comentarios,
+                   a.tipo_recurrencia,
                    c.nombres NombreCliente,
                    c.apellidos ApellidoCliente,
                    u.ciudad Ciudad,
@@ -40,37 +41,44 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Object[]> findScheduleDetailsByDate(@Param("dateService") LocalDate dateService);
 
     @Query(value = """
-            SELECT a.id,
-                   a.numero_documento documentoCliente,
-                   a.fecha FechaServicio,
-                   a.hora_inicio,
-                   a.hora_fin,
-                   a.estado,
-                   a.comentarios,
-                   c.nombres NombreCliente,
-                   c.apellidos ApellidoCliente,
-                   u.ciudad Ciudad,
-                   u.direccion DireccionServicio,
-                   s.id IDServicio,
-                   s.descripcion DescripcionServicio,
-                   e.numero_documento documentoEmpleado,
-                   e.nombres NombreEmpleado,
-                   e.apellidos ApellidoEmpleado
-            FROM agenda a
-            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
-            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.id
-            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
-            LEFT JOIN servicios s ON s.id = ss.servicio_id
-            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
-            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
-            WHERE a.fecha = :dateService AND u.ciudad = :city
-                AND (TRIM(LOWER(c.nombres)) LIKE LOWER(CONCAT('%', :name, '%'))
-                OR TRIM(LOWER(c.apellidos)) LIKE LOWER(CONCAT('%', :surname, '%')));""", nativeQuery = true)
+    SELECT a.id,
+           a.numero_documento documentoCliente,
+           a.fecha FechaServicio,
+           a.hora_inicio,
+           a.hora_fin,
+           a.total_horas_servicio,
+           a.estado,
+           a.comentarios,
+           a.tipo_recurrencia,
+           c.nombres NombreCliente,
+           c.apellidos ApellidoCliente,
+           u.ciudad Ciudad,
+           u.direccion DireccionServicio,
+           s.id IDServicio,
+           s.descripcion DescripcionServicio,
+           e.numero_documento documentoEmpleado,
+           e.nombres NombreEmpleado,
+           e.apellidos ApellidoEmpleado
+    FROM agenda a
+    LEFT JOIN clientes c        ON c.numero_documento   = a.numero_documento
+    LEFT JOIN ubicaciones u     ON a.ubicacion_id      = u.id
+    LEFT JOIN agenda_servicios ss ON a.id              = ss.agenda_id
+    LEFT JOIN servicios s       ON s.id               = ss.servicio_id
+    LEFT JOIN agenda_empleados se ON a.id             = se.agenda_id
+    LEFT JOIN empleados e       ON se.empleado_id      = e.numero_documento
+    WHERE a.fecha = :dateService
+      AND ( :city    IS NULL OR u.ciudad  = :city   )
+      AND ( :name    IS NULL OR LOWER(TRIM(c.nombres))  LIKE CONCAT('%',LOWER(:name),'%')    )
+      AND ( :surname IS NULL OR LOWER(TRIM(c.apellidos)) LIKE CONCAT('%',LOWER(:surname),'%') )
+    """,
+            nativeQuery = true)
     List<Object[]> findScheduleDetailsByDateCityClient(
             @Param("dateService") LocalDate dateService,
-            @Param("city") String city,
-            @Param("name") String name,
-            @Param("surname") String surname);
+            @Param("city")        String    city,
+            @Param("name")        String    name,
+            @Param("surname")     String    surname
+    );
+
 
     @Query(value = """
             SELECT a.id,
@@ -79,9 +87,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    a.hora_inicio,
                    a.hora_fin,
                    a.total_horas_servicio,
+                   a.estado,
                    a.comentarios,
+                   a.tipo_recurrencia,
                    c.nombres NombreCliente,
                    c.apellidos ApellidoCliente,
+                   u.ciudad Ciudad,
                    u.direccion DireccionServicio,
                    s.id IDServicio,
                    s.descripcion DescripcionServicio,

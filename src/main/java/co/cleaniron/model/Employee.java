@@ -25,7 +25,7 @@ public class Employee {
     @Column(name="CorreoElectronico")
     private String email;
     @Column(name="DireccionResdidencia")
-    private String addressResidence; //direccion de residencia
+    private String addressResidence;
     @Column(name="Ciudad")
     private String city;
     @Column(name="FechaIngreso")

@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+@DynamicUpdate
 @Entity
 @Table(name = "Agenda")
 @NoArgsConstructor
@@ -22,6 +25,9 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "Business_Key", nullable = false, length = 100)
+    private String businessKey;
 
     @ManyToOne
     @JoinColumn(name = "Numero_Documento", nullable = false)
@@ -67,24 +73,37 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private ServiceState state;
 
-    // Métodos para cálculo automático
+    @Column(name = "Tipo_Recurrencia", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RecurrenceType recurrenceType;
+
+    // Formateadores
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // YYYYMMDD
+    private static final DateTimeFormatter HOUR_FMT = DateTimeFormatter.ofPattern("HHmm");
+
+    /**
+     * Un único callback para PrePersist y PreUpdate:
+     * - Genera businessKey si es nueva.
+     * - Calcula totalServiceHours siempre.
+     */
     @PrePersist
     @PreUpdate
-    public void calculateServiceHours() {
+    private void prepareEntity() {
+        // 1️⃣ businessKey (solo si aún no existe)
+        String cityCode = serviceAddress.getCity()
+                .replaceAll("\\s+", "")
+                .substring(0, Math.min(3, serviceAddress.getCity().length()))
+                .toUpperCase();
+        String dateKey = date.format(DATE_FMT);
+        String hours = startHour.format(HOUR_FMT) + "-" + endHour.format(HOUR_FMT);
+        String client = getClient().getDocument();
+
+        this.businessKey = String.join("_", cityCode, dateKey, hours, client);
+
+        // 2️⃣ totalServiceHours
         if (startHour != null && endHour != null) {
-            Duration duration = Duration.between(startHour, endHour);
-            this.totalServiceHours = duration.toMinutes() / 60.0;
+            Duration dur = Duration.between(startHour, endHour);
+            this.totalServiceHours = dur.toMinutes() / 60.0;
         }
-    }
-
-    // Setters personalizados para recalcular automáticamente
-    public void setStartHour(LocalTime startHour) {
-        this.startHour = startHour;
-        calculateServiceHours();
-    }
-
-    public void setEndHour(LocalTime endHour) {
-        this.endHour = endHour;
-        calculateServiceHours();
     }
 }

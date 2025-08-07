@@ -3,7 +3,6 @@ package co.cleaniron.controller;
 import co.cleaniron.model.Schedule;
 import co.cleaniron.model.dto.ScheduleDetailGroupedDto;
 import co.cleaniron.model.dto.ScheduleUpdateDto;
-import co.cleaniron.model.dto.ServicesByEmployeeDto;
 import co.cleaniron.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,29 +29,41 @@ public class ScheduleController {
     }
 
     @GetMapping("/servicesEmployee/{employeeDoc}")
-    public ResponseEntity<List<ServicesByEmployeeDto>> getServicesFromEmployeeByMonth(
+    public ResponseEntity<List<ScheduleDetailGroupedDto>> getServicesFromEmployeeByMonth(
             @PathVariable("employeeDoc") String employeeDoc,
             @RequestParam("year") String year,
             @RequestParam("month") String month
-    ){
+    ) {
         return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, year, month));
     }
 
+    /**
+     * 1) Devuelve TODOS los servicios de la fecha indicada,
+     * sin importar ciudad o cliente.
+     */
     @GetMapping("/{dateService}")
-    public ResponseEntity<List<ScheduleDetailGroupedDto>> getScheduleDetails(
+    public ResponseEntity<List<ScheduleDetailGroupedDto>> getAllByDate(
+            @PathVariable("dateService") LocalDate dateService
+    ) {
+        List<ScheduleDetailGroupedDto> result =
+                scheduleService.getScheduleDetailsByDate(dateService);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 2) Devuelve los servicios de la fecha indicada,
+     * filtrando por ciudad o cliente (name + surname).
+     * Si alguno de los tres parámetros es null, se ignora ese filtro.
+     */
+    @GetMapping("/{dateService}/filter")
+    public ResponseEntity<List<ScheduleDetailGroupedDto>> getByDateWithFilters(
             @PathVariable("dateService") LocalDate dateService,
             @RequestParam(value = "city", required = false) String city,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "surname", required = false) String surname
     ) {
-        List<ScheduleDetailGroupedDto> result;
-
-        if (city != null || (name != null && surname != null)) {
-            result = scheduleService.getScheduleDetailsByDateCityClient(dateService, city, name, surname);
-        } else {
-            result = scheduleService.getScheduleDetailsByDate(dateService);
-        }
-
+        List<ScheduleDetailGroupedDto> result =
+                scheduleService.getScheduleDetailsByDateCityClient(dateService, city, name, surname);
         return ResponseEntity.ok(result);
     }
 

@@ -33,11 +33,20 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
     }
 
-    public List<ServicesByEmployeeDto> getServicesFromEmployeeByMonth(String doc, String year, String month){
+    public List<ScheduleDetailGroupedDto> getServicesFromEmployeeByMonth(String doc, String year, String month){
         List<Object[]> results = scheduleRepository.findServicesFromEmployeeByMonth(doc, year, month);
-        return results.stream()
-                .map(ServicesByEmployeeDto::new)
+        List<ScheduleDetailDateDto> scheduleDetails = results.stream()
+                .map(ScheduleDetailDateDto::new)
                 .toList();
+
+        // Agrupar por ID de agenda y combinar empleados
+        Map<Long, List<ScheduleDetailDateDto>> groupedByScheduleId = scheduleDetails.stream()
+                .collect(Collectors.groupingBy(ScheduleDetailDateDto::getId));
+
+        // Convertir a DTO agrupado
+        return groupedByScheduleId.values().stream()
+                .map(this::combineScheduleWithEmployees)
+                .collect(Collectors.toList());
     }
 
     public List<ScheduleDetailGroupedDto> getScheduleDetailsByDateCityClient(LocalDate date, String city, String name, String surname) {

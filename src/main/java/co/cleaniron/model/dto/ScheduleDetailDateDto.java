@@ -12,11 +12,12 @@ public class ScheduleDetailDateDto {
     private Long id;                   // ID de la agenda
     private String clientDocument;  // Cambiado a Integer
     private LocalDate serviceDate;
-    private LocalTime startDate;     // Cambiado a LocalTime según tu entidad
-    private LocalTime endDate;        // Cambiado a LocalTime según tu entidad
+    private LocalTime startHour;     // Cambiado a LocalTime según tu entidad
+    private LocalTime endHour;        // Cambiado a LocalTime según tu entidad
     private double totalServiceHours;
     private String state;
     private String comments;
+    private String recurrenceType;
     private String clientName;
     private String clientSurname;
     private String city;
@@ -30,22 +31,23 @@ public class ScheduleDetailDateDto {
     // Constructor con casting correcto según tus entidades
     public ScheduleDetailDateDto(Object[] row) {
         this.id = castToLong(row[0]);                          // ID de la agenda
-        this.clientDocument = castToString(row[1]);           // NUMERO_DOCUMENTO es Integer
+        this.clientDocument = castToString(row[1]);            // NUMERO_DOCUMENTO es Integer
         this.serviceDate = castToLocalDate(row[2]);            // FECHA es LocalDate
-        this.startDate = castToLocalTime(row[3]);              // FECHA_INICIO es LocalTime
-        this.endDate = castToLocalTime(row[4]);                // FECHA_FIN es LocalTime
+        this.startHour = castToLocalTime(row[3]);              // FECHA_INICIO es LocalTime
+        this.endHour = castToLocalTime(row[4]);                // FECHA_FIN es LocalTime
         this.totalServiceHours = castToDouble(row[5]);         // TOTAL_HORAS_SERVICIO es double
         this.state = castToString(row[6]);                     // ESTADO es String (enum)
         this.comments = castToString(row[7]);                  // COMENTARIOS es String
-        this.clientName = castToString(row[8]);                // NOMBRES es String
-        this.clientSurname = castToString(row[9]);             // APELLIDOS es String
-        this.city = castToString(row[10]);                      // CIUDAD es String
-        this.addressService = castToString(row[11]);            // DIRECCION es String
-        this.idService = castToInteger(row[12]);                // IDSerivicio es Integer
-        this.serviceDescription = castToString(row[13]);        // DESCRIPCION es String
-        this.employeeDocument = castToString(row[14]);          //NUMERO_DOCUMENTO es String
-        this.employeeName = castToString(row[15]);             // NOMBRES es String
-        this.employeeSurname = castToString(row[16]);          // APELLIDOS es String
+        this.recurrenceType = castToString(row[8]);            // TIPO_RECURRENCIA es String
+        this.clientName = castToString(row[9]);                // NOMBRES es String
+        this.clientSurname = castToString(row[10]);            // APELLIDOS es String
+        this.city = castToString(row[11]);                     // CIUDAD es String
+        this.addressService = castToString(row[12]);           // DIRECCION es String
+        this.idService = castToInteger(row[13]);               // IDSerivicio es Integer
+        this.serviceDescription = castToString(row[14]);       // DESCRIPCION es String
+        this.employeeDocument = castToString(row[15]);         //NUMERO_DOCUMENTO es String
+        this.employeeName = castToString(row[16]);             // NOMBRES es String
+        this.employeeSurname = castToString(row[17]);          // APELLIDOS es String
     }
 
     // Método helper para casting seguro a Double
