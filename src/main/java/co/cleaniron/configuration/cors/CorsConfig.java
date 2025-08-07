@@ -15,7 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://localhost:3000"); // o IP pública del frontend
-        config.addAllowedOrigin("https://polite-sand-0fe40b80f.1.azurestaticapps.net"); // si ya está desplegado
+        config.addAllowedOrigin("http://20.42.92.103:8080"); // si ya está desplegado
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");
