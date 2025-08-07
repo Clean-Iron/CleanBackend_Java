@@ -16,6 +16,9 @@ COPY --from=builder /app/target/*.jar app.jar
 # IMPORTANTE: Copia todos los recursos de la aplicación
 COPY --from=builder /app/src/main/resources/ /app/resources/
 
+# También copia directamente al classpath esperado por Spring
+COPY --from=builder /app/src/main/resources/static/ /app/BOOT-INF/classes/static/ || true
+
 # Volumen para persistir logs
 VOLUME ["/app/logs"]
 
