@@ -11,7 +11,8 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copia del JAR compilado
-COPY --from=builder /app/target/*.jar app.jar
+ARG JAR_NAME=$(ls /build/target | grep -E '^[^-].*\.jar$' | head -n1)
+COPY --from=builder /build/target/${JAR_NAME} app.jar
 
 # Volumen para persistir logs
 VOLUME ["/app/logs"]
