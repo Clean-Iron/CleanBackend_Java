@@ -9,7 +9,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # 2) Etapa de runtime
-FROM eclipse-temurin:21-jdk-slim
+FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 COPY --from=builder /app/target/*.jar app.jar
