@@ -6,6 +6,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 @Configuration
 public class CorsConfig {
 
@@ -14,7 +16,11 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:3000"); // o IP pública del frontend
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "https://cleanapp-h3eyafdghheqecev.azurewebsites.net"
+                // agrega aquí tu dominio personalizado si aplica, p.ej. "https://*.midominio.com"
+        )); // o IP pública del frontend
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");
