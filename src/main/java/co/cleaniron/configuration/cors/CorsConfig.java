@@ -15,7 +15,6 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://localhost:3000"); // o IP pública del frontend
-        config.addAllowedOrigin("http://20.42.92.103:8080"); // si ya está desplegado
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");
