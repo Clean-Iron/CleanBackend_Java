@@ -2,14 +2,14 @@ package co.cleaniron.service;
 
 import co.cleaniron.model.Address;
 import co.cleaniron.model.Client;
+import co.cleaniron.model.dto.AddressDto;
+import co.cleaniron.model.dto.ClientDto;
 import co.cleaniron.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ClientService {
@@ -20,8 +20,18 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public Client getClientById(String doc) {
-        return (clientRepository.findById(doc).isPresent() ? clientRepository.findById(doc).get() : null);
+    @Transactional(readOnly = true)
+    public List<ClientDto> getClients() {
+        return clientRepository.findAll().stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ClientDto getClientById(String doc) {
+        Client c = clientRepository.findByDocument(doc)
+                .orElseThrow(() -> new NoSuchElementException("Cliente no existe: " + doc));
+        return toDTO(c);
     }
 
     public Client getClientWithAddresses(String doc) {
@@ -32,74 +42,53 @@ public class ClientService {
         return clientRepository.findAllClientsWithAddressInACity(city);
     }
 
-    public List<String> getCities(){
-        return clientRepository.findAllCities();
-    }
-
-    public List<Client> getClients() {
-        return clientRepository.findAll();
-    }
-
+    @Transactional
     public Boolean updateClient(String document, Client updatedClient) {
-        Optional<Client> existingClientOpt = clientRepository.findById(document);
+        // usa el método que trae las direcciones
+        Client existingClient = clientRepository.findByDocumentWithAddresses(document)
+                .orElse(null);
+        if (existingClient == null) return false;
 
-        if (existingClientOpt.isPresent()) {
-            Client existingClient = existingClientOpt.get();
+        // campos básicos
+        existingClient.setTypeId(updatedClient.getTypeId());
+        existingClient.setName(updatedClient.getName());
+        existingClient.setSurname(updatedClient.getSurname());
+        existingClient.setPhone(updatedClient.getPhone());
+        existingClient.setEmail(updatedClient.getEmail());
 
-            System.out.println(updatedClient.getTypeId());
-            // Actualizar campos básicos del cliente
-            existingClient.setTypeId(updatedClient.getTypeId());
-            existingClient.setName(updatedClient.getName());
-            existingClient.setSurname(updatedClient.getSurname());
-            existingClient.setPhone(updatedClient.getPhone());
-            existingClient.setEmail(updatedClient.getEmail());
+        // sincronizar direcciones
+        if (updatedClient.getAddresses() != null) {
+            var existing = existingClient.getAddresses();
+            var toRemove = new HashSet<>(existing);
 
-            // --------- SINCRONIZACIÓN DE DIRECCIONES ---------
-            if (updatedClient.getAddresses() != null) {
-                Set<Address> incomingAddresses = updatedClient.getAddresses();
-                Set<Address> existingAddresses = existingClient.getAddresses();
-
-                // Crear copia para evitar ConcurrentModificationException
-                Set<Address> addressesToRemove = new HashSet<>(existingAddresses);
-
-                for (Address incoming : incomingAddresses) {
-                    if (incoming.getId() != null) {
-                        // Buscar dirección existente por ID
-                        Address match = existingAddresses.stream()
-                                .filter(a -> incoming.getId().equals(a.getId()))
-                                .findFirst()
-                                .orElse(null);
-
-                        if (match != null) {
-                            // Actualizar campos de la dirección existente
-                            match.setAddress(incoming.getAddress());
-                            match.setCity(incoming.getCity());
-                            match.setDescription(incoming.getDescription());
-                            addressesToRemove.remove(match);
-                        } else {
-                            // Dirección con ID pero no se encuentra en la lista actual: agregarla
-                            incoming.setClient(existingClient);
-                            existingAddresses.add(incoming);
-                        }
+            for (Address inAddr : updatedClient.getAddresses()) {
+                if (inAddr.getId() != null) {
+                    Address match = existing.stream()
+                            .filter(a -> a.getId().equals(inAddr.getId()))
+                            .findFirst().orElse(null);
+                    if (match != null) {
+                        match.setAddress(inAddr.getAddress());
+                        match.setCity(inAddr.getCity());
+                        match.setDescription(inAddr.getDescription());
+                        toRemove.remove(match);
                     } else {
-                        // Nueva dirección (sin ID): agregar
-                        incoming.setClient(existingClient);
-                        existingAddresses.add(incoming);
+                        inAddr.setClient(existingClient);
+                        existing.add(inAddr);
                     }
-                }
-
-                // Eliminar direcciones que no llegaron en la nueva lista
-                for (Address addressToRemove : addressesToRemove) {
-                    addressToRemove.setClient(null); // rompe relación
-                    existingAddresses.remove(addressToRemove);
+                } else {
+                    inAddr.setClient(existingClient);
+                    existing.add(inAddr);
                 }
             }
 
-            clientRepository.save(existingClient);
-            return true;
+            // con orphanRemoval=true basta con quitar del Set
+            toRemove.forEach(existing::remove);
         }
 
-        return false;
+        // no necesitas llamar a save() si la entidad está managed,
+        // pero puedes dejarlo si quieres explícito:
+        clientRepository.save(existingClient);
+        return true;
     }
 
 
@@ -109,5 +98,13 @@ public class ClientService {
             return true;
         }
         return false;
+    }
+
+    private ClientDto toDTO(Client c) {
+        Set<AddressDto> addrs = c.getAddresses().stream()
+                .map(a -> new AddressDto(a.getId(), a.getAddress(), a.getCity(), a.getDescription()))
+                .collect(java.util.stream.Collectors.toSet());
+        return new ClientDto(c.getDocument(), c.getTypeId(), c.getName(), c.getSurname(),
+                c.getPhone(), c.getEmail(), addrs);
     }
 }

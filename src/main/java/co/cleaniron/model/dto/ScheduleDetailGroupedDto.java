@@ -31,19 +31,19 @@ public class ScheduleDetailGroupedDto {
     public ScheduleDetailGroupedDto() {}
 
     public ScheduleDetailGroupedDto(ScheduleDetailDateDto dto) {
-        this.id = dto.getId();
-        this.clientDocument = dto.getClientDocument();
-        this.serviceDate = dto.getServiceDate();
-        this.startHour = dto.getStartHour();
-        this.endHour = dto.getEndHour();
-        this.totalServiceHours = dto.getTotalServiceHours();
-        this.state = dto.getState();
-        this.comments = dto.getComments();
-        this.clientName = dto.getClientName();
-        this.clientSurname = dto.getClientSurname();
-        this.city = dto.getCity();
-        this.clientCompleteName = dto.getNombreCompletoCliente();
-        this.addressService = dto.getAddressService();
-        this.recurrenceType = dto.getRecurrenceType();
+        this.id = dto.id();
+        this.clientDocument = dto.clientDocument();
+        this.serviceDate = dto.serviceDate();
+        this.startHour = dto.startHour();
+        this.endHour = dto.endHour();
+        this.totalServiceHours = dto.totalServiceHours();
+        this.state = dto.state();
+        this.comments = dto.comments();
+        this.clientName = dto.clientName();
+        this.clientSurname = dto.clientSurname();
+        this.city = dto.city();
+        this.clientCompleteName = dto.nombreCompletoCliente();
+        this.addressService = dto.addressService();
+        this.recurrenceType = dto.recurrenceType();
     }
 }

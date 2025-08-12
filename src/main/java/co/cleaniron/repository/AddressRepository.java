@@ -6,13 +6,5 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface AddressRepository extends JpaRepository<Address, Long> {
-
-    @Query(value = """ 
-                   SELECT DISTINCT
-                        ciudad 
-                   FROM ubicaciones
-                   WHERE ciudad IS NOT NULL 
-                   ORDER BY ciudad ASC""", nativeQuery = true)
-    List<String> findListCities();
+public interface AddressRepository extends JpaRepository<Address, Integer> {
 }

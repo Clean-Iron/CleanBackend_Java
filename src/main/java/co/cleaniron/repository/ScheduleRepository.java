@@ -11,109 +11,118 @@ import java.util.List;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    @Query(value = """
-            SELECT a.id,
-                   a.numero_documento documentoCliente,
-                   a.fecha FechaServicio,
-                   a.hora_inicio,
-                   a.hora_fin,
-                   a.total_horas_servicio,
-                   a.estado,
-                   a.comentarios,
-                   a.tipo_recurrencia,
-                   c.nombres NombreCliente,
-                   c.apellidos ApellidoCliente,
-                   u.ciudad Ciudad,
-                   u.direccion DireccionServicio,
-                   s.id IDServicio,
-                   s.descripcion DescripcionServicio,
-                   e.numero_documento documentoEmpleado,
-                   e.nombres NombreEmpleado,
-                   e.apellidos ApellidoEmpleado
-            FROM agenda a
-            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
-            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.ID
-            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
-            LEFT JOIN servicios s ON s.id = ss.servicio_id
-            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
-            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
-            WHERE a.fecha = :dateService""", nativeQuery = true)
+    @Query("""
+                SELECT a.id,
+                       c.document,
+                       a.date,
+                       a.startHour,
+                       a.endHour,
+                       a.totalServiceHours,
+                       a.state,
+                       a.comments,
+                       a.recurrenceType,
+                       c.name,
+                       c.surname,
+                       u.city,
+                       u.address,
+                       s.id,
+                       s.description,
+                       e.document,
+                       e.name,
+                       e.surname
+                FROM Schedule a
+                LEFT JOIN a.client c
+                LEFT JOIN a.serviceAddress u
+                LEFT JOIN a.services s
+                LEFT JOIN a.employees e
+                WHERE a.date = :dateService
+            """)
     List<Object[]> findScheduleDetailsByDate(@Param("dateService") LocalDate dateService);
 
-    @Query(value = """
-    SELECT a.id,
-           a.numero_documento documentoCliente,
-           a.fecha FechaServicio,
-           a.hora_inicio,
-           a.hora_fin,
-           a.total_horas_servicio,
-           a.estado,
-           a.comentarios,
-           a.tipo_recurrencia,
-           c.nombres NombreCliente,
-           c.apellidos ApellidoCliente,
-           u.ciudad Ciudad,
-           u.direccion DireccionServicio,
-           s.id IDServicio,
-           s.descripcion DescripcionServicio,
-           e.numero_documento documentoEmpleado,
-           e.nombres NombreEmpleado,
-           e.apellidos ApellidoEmpleado
-    FROM agenda a
-    LEFT JOIN clientes c        ON c.numero_documento   = a.numero_documento
-    LEFT JOIN ubicaciones u     ON a.ubicacion_id      = u.id
-    LEFT JOIN agenda_servicios ss ON a.id              = ss.agenda_id
-    LEFT JOIN servicios s       ON s.id               = ss.servicio_id
-    LEFT JOIN agenda_empleados se ON a.id             = se.agenda_id
-    LEFT JOIN empleados e       ON se.empleado_id      = e.numero_documento
-    WHERE a.fecha = :dateService
-      AND ( :city    IS NULL OR u.ciudad  = :city   )
-      AND ( :name    IS NULL OR LOWER(TRIM(c.nombres))  LIKE CONCAT('%',LOWER(:name),'%')    )
-      AND ( :surname IS NULL OR LOWER(TRIM(c.apellidos)) LIKE CONCAT('%',LOWER(:surname),'%') )
-    """,
-            nativeQuery = true)
+    @Query("""
+                SELECT a.id,
+                       a.client.document,
+                       a.date,
+                       a.startHour,
+                       a.endHour,
+                       a.totalServiceHours,
+                       a.state,
+                       a.comments,
+                       a.recurrenceType,
+                       c.name,
+                       c.surname,
+                       u.city,
+                       u.address,
+                       s.id,
+                       s.description,
+                       e.document,
+                       e.name,
+                       e.surname
+                FROM Schedule a
+                LEFT JOIN a.client c
+                LEFT JOIN a.serviceAddress u
+                LEFT JOIN a.services s
+                LEFT JOIN a.employees e
+                WHERE a.date = :dateService
+                  AND (:city IS NULL OR u.city = :city)
+                  AND (:name IS NULL OR LOWER(TRIM(c.name)) LIKE CONCAT('%', LOWER(:name), '%'))
+                  AND (:surname IS NULL OR LOWER(TRIM(c.surname)) LIKE CONCAT('%', LOWER(:surname), '%'))
+                ORDER BY a.date, a.id, e.surname, e.name
+            """)
     List<Object[]> findScheduleDetailsByDateCityClient(
             @Param("dateService") LocalDate dateService,
-            @Param("city")        String    city,
-            @Param("name")        String    name,
-            @Param("surname")     String    surname
+            @Param("city") String city,
+            @Param("name") String name,
+            @Param("surname") String surname
     );
 
-
-    @Query(value = """
-            SELECT a.id,
-                   a.numero_documento documentoCliente,
-                   a.fecha FechaServicio,
-                   a.hora_inicio,
-                   a.hora_fin,
-                   a.total_horas_servicio,
-                   a.estado,
-                   a.comentarios,
-                   a.tipo_recurrencia,
-                   c.nombres NombreCliente,
-                   c.apellidos ApellidoCliente,
-                   u.ciudad Ciudad,
-                   u.direccion DireccionServicio,
-                   s.id IDServicio,
-                   s.descripcion DescripcionServicio,
-                   e.numero_documento documentoEmpleado,
-                   e.nombres NombreEmpleado,
-                   e.apellidos ApellidoEmpleado
-            FROM agenda a
-            LEFT JOIN clientes c ON c.numero_documento = a.numero_documento
-            LEFT JOIN ubicaciones u ON a.ubicacion_id = u.id
-            LEFT JOIN agenda_servicios ss ON a.id = ss.agenda_id
-            LEFT JOIN servicios s ON s.id = ss.servicio_id
-            LEFT JOIN agenda_empleados se ON a.id = se.agenda_id
-            LEFT JOIN empleados e ON se.empleado_id = e.numero_documento
-        WHERE e.numero_documento = :doc
-            AND EXTRACT(YEAR  FROM a.fecha)  = :year
-            AND EXTRACT(MONTH FROM a.fecha)  = :month
-        """, nativeQuery = true
-    )
-    List<Object[]> findServicesFromEmployeeByMonth(
+    @Query("""
+            SELECT s.id,
+                   c.document,
+                   s.date,
+                   s.startHour,
+                   s.endHour,
+                   s.totalServiceHours,
+                   s.state,
+                   s.comments,
+                   s.recurrenceType,
+                   c.name,
+                   c.surname,
+                   a.city,
+                   a.address,
+                   sv.id,
+                   sv.description,
+                   e.document,
+                   e.name,
+                   e.surname
+            FROM Schedule s
+              JOIN s.client c
+              JOIN s.serviceAddress a
+              LEFT JOIN s.services sv
+              LEFT JOIN s.employees e
+            WHERE s.date >= :fromDate
+              AND s.date  < :toDate
+              AND EXISTS (
+                  SELECT 1 FROM s.employees se
+                  WHERE se.document = :doc
+              )
+            ORDER BY s.date, s.id, e.surname, e.name
+            """)
+    List<Object[]> findServicesByDocAndDateRange(
             @Param("doc") String doc,
-            @Param("year") String year,
-            @Param("month") String month
+            @Param("fromDate") java.time.LocalDate fromDate,
+            @Param("toDate") java.time.LocalDate toDate
     );
+
+    // Mantiene exactamente los parámetros que ya recibes:
+    default List<Object[]> findServicesFromEmployeeByMonth(
+            String doc, String year, String month
+    ) {
+        int y = Integer.parseInt(year);
+        int m = Integer.parseInt(month);
+        java.time.LocalDate from = java.time.LocalDate.of(y, m, 1);
+        java.time.LocalDate to = from.plusMonths(1);
+        return findServicesByDocAndDateRange(doc, from, to);
+    }
+
 }

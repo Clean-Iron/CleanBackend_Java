@@ -30,7 +30,7 @@ public class EmployeeController {
             @RequestParam LocalTime endHour,
             @RequestParam String city) {
 
-        return employeeService.getAvailabilityEmployees(date,startHour,endHour,city);
+        return employeeService.getAvailabilityEmployees(date, startHour, endHour, city);
     }
 
     @GetMapping("/id/{id}")
@@ -49,7 +49,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/new")
-    public void createNewEmployee(@RequestBody Employee employee){
+    public void createNewEmployee(@RequestBody Employee employee) {
         employeeService.createNewEmployee(employee);
     }
 
@@ -59,7 +59,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void desactivateEmployee(@PathVariable String id){
+    public void desactivateEmployee(@PathVariable String id) {
         employeeService.deactivateEmployee(id);
     }
 
