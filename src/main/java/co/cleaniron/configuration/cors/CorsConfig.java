@@ -17,6 +17,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(List.of(
+                "http://localhost:8080",
                 "http://localhost:3000",
                 "https://cleanapp-h3eyafdghheqecev.azurewebsites.net"
                 // agrega aquí tu dominio personalizado si aplica, p.ej. "https://*.midominio.com"
