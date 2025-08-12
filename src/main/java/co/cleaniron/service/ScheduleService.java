@@ -29,51 +29,24 @@ public class ScheduleService {
         this.employeeRepository = employeeRepository;
     }
 
-    public void createSchedule(Schedule schedule){
+    public void createSchedule(Schedule schedule) {
         scheduleRepository.save(schedule);
     }
 
-    public Schedule updateSchedulePartial(Long id, ScheduleUpdateDto dto) {
-        Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Agenda no encontrada con ID: " + id));
+    public List<ScheduleDetailGroupedDto> getServicesFromEmployeeByMonth(String doc, String year, String month) {
+        List<Object[]> results = scheduleRepository.findServicesFromEmployeeByMonth(doc, year, month);
+        List<ScheduleDetailDateDto> scheduleDetails = results.stream()
+                .map(ScheduleDetailDateDto::new)
+                .toList();
 
-        if (dto.getDate() != null) {
-            schedule.setDate(dto.getDate());
-        }
+        // Agrupar por ID de agenda y combinar empleados
+        Map<Long, List<ScheduleDetailDateDto>> groupedByScheduleId = scheduleDetails.stream()
+                .collect(Collectors.groupingBy(ScheduleDetailDateDto::id));
 
-        if (dto.getStartHour() != null) {
-            schedule.setStartHour(dto.getStartHour());
-        }
-
-        if (dto.getEndHour() != null) {
-            schedule.setEndHour(dto.getEndHour());
-        }
-
-        if (dto.getComments() != null) {
-            schedule.setComments(dto.getComments());
-        }
-
-        if (dto.getState() != null) {
-            schedule.setState(dto.getState());
-        }
-
-        if (dto.getEmployeeDocuments() != null) {
-            schedule.setEmployees(
-                    new HashSet<>(employeeRepository.findAllById(dto.getEmployeeDocuments()))
-            );
-        }
-
-        if (dto.getIdServices() != null) {
-            schedule.setServices(
-                    new HashSet<>(serviceRepository.findAllById(dto.getIdServices()))
-            );
-        }
-
-        return scheduleRepository.save(schedule);
-    }
-
-    public void deleteSchedule(Long id){
-        scheduleRepository.deleteById(id);
+        // Convertir a DTO agrupado
+        return groupedByScheduleId.values().stream()
+                .map(this::combineScheduleWithEmployees)
+                .collect(Collectors.toList());
     }
 
     public List<ScheduleDetailGroupedDto> getScheduleDetailsByDateCityClient(LocalDate date, String city, String name, String surname) {
@@ -85,7 +58,7 @@ public class ScheduleService {
 
         // Agrupar por ID de agenda y combinar empleados
         Map<Long, List<ScheduleDetailDateDto>> groupedByScheduleId = scheduleDetails.stream()
-                .collect(Collectors.groupingBy(ScheduleDetailDateDto::getId));
+                .collect(Collectors.groupingBy(ScheduleDetailDateDto::id));
 
         // Convertir a DTO agrupado
         return groupedByScheduleId.values().stream()
@@ -102,7 +75,7 @@ public class ScheduleService {
 
         // Agrupar por ID de agenda y combinar empleados
         Map<Long, List<ScheduleDetailDateDto>> groupedByScheduleId = scheduleDetails.stream()
-                .collect(Collectors.groupingBy(ScheduleDetailDateDto::getId));
+                .collect(Collectors.groupingBy(ScheduleDetailDateDto::id));
 
         // Convertir a DTO agrupado
         return groupedByScheduleId.values().stream()
@@ -117,17 +90,60 @@ public class ScheduleService {
 
         // Combinar todos los empleados únicos
         Set<EmployeeDto> employees = scheduleGroup.stream()
-                .filter(s -> s.getEmployeeDocument() != null) // Filtrar empleados nulos
-                .map(s -> new EmployeeDto(s.getEmployeeDocument(), s.getEmployeeName(), s.getEmployeeSurname()))
+                .filter(s -> s.employeeDocument() != null) // Filtrar empleados nulos
+                .map(s -> new EmployeeDto(s.employeeDocument(), s.employeeName(), s.employeeSurname()))
                 .collect(Collectors.toSet());
 
         Set<ServiceDto> services = scheduleGroup.stream()
-                .filter(s -> s.getIdService() != null) // Filtrar empleados nulos
-                .map(s -> new ServiceDto(s.getIdService(), s.getServiceDescription()))
+                .filter(s -> s.idService() != null) // Filtrar empleados nulos
+                .map(s -> new ServiceDto(s.idService(), s.serviceDescription()))
                 .collect(Collectors.toSet());
 
         grouped.setServices(services);
         grouped.setEmployees(employees);
         return grouped;
+    }
+
+    public Schedule updateSchedulePartial(Long id, ScheduleUpdateDto dto) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agenda no encontrada con ID: " + id));
+
+        if (dto.date() != null) {
+            schedule.setDate(dto.date());
+        }
+
+        if (dto.startHour() != null) {
+            schedule.setStartHour(dto.startHour());
+        }
+
+        if (dto.endHour() != null) {
+            schedule.setEndHour(dto.endHour());
+        }
+
+        if (dto.comments() != null) {
+            schedule.setComments(dto.comments());
+        }
+
+        if (dto.state() != null) {
+            schedule.setState(dto.state());
+        }
+
+        if (dto.employeeDocuments() != null) {
+            schedule.setEmployees(
+                    new HashSet<>(employeeRepository.findAllById(dto.employeeDocuments()))
+            );
+        }
+
+        if (dto.idServices() != null) {
+            schedule.setServices(
+                    new HashSet<>(serviceRepository.findAllById(dto.idServices()))
+            );
+        }
+
+        return scheduleRepository.save(schedule);
+    }
+
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
     }
 }

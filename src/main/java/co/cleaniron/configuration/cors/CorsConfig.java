@@ -14,11 +14,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow all origins temporarily for testing
-        //config.addAllowedOriginPattern("*");
-        // For production, specify exact origins:
         config.addAllowedOrigin("http://localhost:3000"); // o IP pública del frontend
-        config.addAllowedOrigin("https://lively-wave-0e0de700f.2.azurestaticapps.net"); // si ya está desplegado
+        config.addAllowedOrigin("http://20.42.92.103:8080"); // si ya está desplegado
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");

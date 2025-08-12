@@ -1,6 +1,7 @@
 package co.cleaniron.repository;
 
 import co.cleaniron.model.Client;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,13 +13,29 @@ import java.util.Optional;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, String> {
 
-    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.addresses WHERE c.document = :doc")
+    @EntityGraph(attributePaths = "addresses")
+    Optional<Client> findById(String document);
+
+    @EntityGraph(attributePaths = "addresses")
+    @Query("select distinct c from Client c")
+    List<Client> findAll();
+
+    @EntityGraph(attributePaths = "addresses")
+    Optional<Client> findByDocument(String document);
+
+    @Query("""
+              SELECT DISTINCT c
+              FROM Client c
+              LEFT JOIN FETCH c.addresses
+              WHERE c.document = :doc
+            """)
     Optional<Client> findByDocumentWithAddresses(@Param("doc") String doc);
 
-    @Query(value = """
-            SELECT DISTINCT c.*
-            FROM CLIENTES c
-            JOIN UBICACIONES u ON c.NUMERO_DOCUMENTO = u.NUMERO_DOCUMENTO
-            WHERE u.Ciudad = :city;""", nativeQuery = true)
+    @Query("""
+              select distinct c
+              from Client c
+              join fetch c.addresses a
+              where a.city = :city
+            """)
     List<Client> findAllClientsWithAddressInACity(@Param("city") String city);
 }

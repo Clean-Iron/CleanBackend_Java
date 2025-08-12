@@ -14,8 +14,8 @@ public class ScheduleDetailGroupedDto {
     private Long id;
     private String clientDocument;
     private LocalDate serviceDate;
-    private LocalTime startDate;
-    private LocalTime endDate;
+    private LocalTime startHour;
+    private LocalTime endHour;
     private double totalServiceHours;
     private String state;
     private String comments;
@@ -24,24 +24,26 @@ public class ScheduleDetailGroupedDto {
     private String clientCompleteName;
     private String city;
     private String addressService;
+    private String recurrenceType;
     private Set<ServiceDto> services;
     private Set<EmployeeDto> employees;
 
     public ScheduleDetailGroupedDto() {}
 
     public ScheduleDetailGroupedDto(ScheduleDetailDateDto dto) {
-        this.id = dto.getId();
-        this.clientDocument = dto.getClientDocument();
-        this.serviceDate = dto.getServiceDate();
-        this.startDate = dto.getStartDate();
-        this.endDate = dto.getEndDate();
-        this.totalServiceHours = dto.getTotalServiceHours();
-        this.state = dto.getState();
-        this.comments = dto.getComments();
-        this.clientName = dto.getClientName();
-        this.clientSurname = dto.getClientSurname();
-        this.city = dto.getCity();
-        this.clientCompleteName = dto.getNombreCompletoCliente();
-        this.addressService = dto.getAddressService();
+        this.id = dto.id();
+        this.clientDocument = dto.clientDocument();
+        this.serviceDate = dto.serviceDate();
+        this.startHour = dto.startHour();
+        this.endHour = dto.endHour();
+        this.totalServiceHours = dto.totalServiceHours();
+        this.state = dto.state();
+        this.comments = dto.comments();
+        this.clientName = dto.clientName();
+        this.clientSurname = dto.clientSurname();
+        this.city = dto.city();
+        this.clientCompleteName = dto.nombreCompletoCliente();
+        this.addressService = dto.addressService();
+        this.recurrenceType = dto.recurrenceType();
     }
 }

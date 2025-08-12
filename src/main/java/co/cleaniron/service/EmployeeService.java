@@ -23,17 +23,21 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<Employee> getAvailabilityEmployees(LocalDate date, LocalTime startHour, LocalTime endHour, String city){
-        return employeeRepository.findAvailableEmployeesByDateStartHourEndHourCity(date, startHour, endHour, city);
-    }
-
     public Employee getEmployeeById(String id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empleado no encontrado con ID: " + id));
     }
 
+    public List<Employee> getEmployeeByCity(String city){
+        return employeeRepository.findEmployeesByCity(city);
+    }
+
     public List<Employee> getAllEmployees(){
         return employeeRepository.findAll();
+    }
+
+    public List<Employee> getAvailabilityEmployees(LocalDate date, LocalTime startHour, LocalTime endHour, String city){
+        return employeeRepository.findAvailableEmployeesByDateStartHourEndHourCity(date, startHour, endHour, city);
     }
 
     public void createNewEmployee(Employee employee){

@@ -1,6 +1,7 @@
 package co.cleaniron.controller;
 
 import co.cleaniron.model.Client;
+import co.cleaniron.model.dto.ClientDto;
 import co.cleaniron.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public Client getClientById(@PathVariable String id) {
+    public ClientDto getClientById(@PathVariable String id) {
         return clientService.getClientById(id);
     }
 
@@ -28,8 +29,8 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getClientWithAddresses(doc));
     }
 
-    @GetMapping("clients")
-    public ResponseEntity<List<Client>> getAllClients(){
+    @GetMapping
+    public ResponseEntity<List<ClientDto>> getAllClients(){
         return ResponseEntity.ok(clientService.getClients());
     }
 

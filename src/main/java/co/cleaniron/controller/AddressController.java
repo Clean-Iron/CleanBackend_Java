@@ -25,7 +25,7 @@ public class AddressController {
     }
 
     @GetMapping("cities")
-    public ResponseEntity<List<String>> getClientAddresses(){
+    public ResponseEntity<List<String>> getCities(){
         return ResponseEntity.ok(addressService.getCities());
     }
 }

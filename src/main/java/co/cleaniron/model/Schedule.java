@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+@DynamicUpdate
 @Entity
 @Table(name = "Agenda")
 @NoArgsConstructor
@@ -22,6 +25,9 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "Business_Key", nullable = false, length = 100)
+    private String businessKey;
 
     @ManyToOne
     @JoinColumn(name = "Numero_Documento", nullable = false)
@@ -67,58 +73,37 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private ServiceState state;
 
-    // Opción 2: Campo calculado en tiempo real (no se guarda en BD)
-    @Transient
-    private Double calculatedServiceHours;
+    @Column(name = "Tipo_Recurrencia", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RecurrenceType recurrenceType;
 
-    // Métodos para cálculo automático
+    // Formateadores
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // YYYYMMDD
+    private static final DateTimeFormatter HOUR_FMT = DateTimeFormatter.ofPattern("HHmm");
+
+    /**
+     * Un único callback para PrePersist y PreUpdate:
+     * - Genera businessKey si es nueva.
+     * - Calcula totalServiceHours siempre.
+     */
     @PrePersist
     @PreUpdate
-    public void calculateServiceHours() {
+    private void prepareEntity() {
+        // 1️⃣ businessKey (solo si aún no existe)
+        String cityCode = serviceAddress.getCity()
+                .replaceAll("\\s+", "")
+                .substring(0, Math.min(3, serviceAddress.getCity().length()))
+                .toUpperCase();
+        String dateKey = date.format(DATE_FMT);
+        String hours = startHour.format(HOUR_FMT) + "-" + endHour.format(HOUR_FMT);
+        String client = getClient().getDocument();
+
+        this.businessKey = String.join("_", cityCode, dateKey, hours, client);
+
+        // 2️⃣ totalServiceHours
         if (startHour != null && endHour != null) {
-            Duration duration = Duration.between(startHour, endHour);
-            this.totalServiceHours = duration.toMinutes() / 60.0;
+            Duration dur = Duration.between(startHour, endHour);
+            this.totalServiceHours = dur.toMinutes() / 60.0;
         }
-    }
-
-    // Getter personalizado para horas calculadas en tiempo real
-    public Double getCalculatedServiceHours() {
-        if (startHour != null && endHour != null) {
-            Duration duration = Duration.between(startHour, endHour);
-            return duration.toMinutes() / 60.0;
-        }
-        return 0.0;
-    }
-
-    // Método de utilidad para obtener horas en formato legible
-    public String getFormattedServiceHours() {
-        Double hours = getTotalServiceHours();
-        if (hours == null) {
-            hours = getCalculatedServiceHours();
-        }
-
-        if (hours == 0) {
-            return "0 horas";
-        }
-
-        int wholeHours = hours.intValue();
-        int minutes = (int) ((hours - wholeHours) * 60);
-
-        if (minutes == 0) {
-            return wholeHours + (wholeHours == 1 ? " hora" : " horas");
-        } else {
-            return wholeHours + "h " + minutes + "m";
-        }
-    }
-
-    // Setters personalizados para recalcular automáticamente
-    public void setStartHour(LocalTime startHour) {
-        this.startHour = startHour;
-        calculateServiceHours();
-    }
-
-    public void setEndHour(LocalTime endHour) {
-        this.endHour = endHour;
-        calculateServiceHours();
     }
 }
