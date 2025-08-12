@@ -19,9 +19,8 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:8080",
                 "http://localhost:3000",
-                "https://cleanapp-h3eyafdghheqecev.azurewebsites.net"
-                // agrega aquí tu dominio personalizado si aplica, p.ej. "https://*.midominio.com"
-        )); // o IP pública del frontend
+                "https://cleanapp-h3eyafdghheqecev.eastus-01.azurewebsites.net"
+        ));
 
         config.setAllowCredentials(true);
         config.addAllowedMethod("*");
