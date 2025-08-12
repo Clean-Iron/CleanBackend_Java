@@ -27,13 +27,13 @@ public class DataInitializer {
     @Transactional
     public void initializeData() {
 
-        upsertCities(List.of("Bogotá","Mosquera","Funza","Chía","Cajicá"));
+        // Si ya hay agendas, no volver a sembrar nada más
+        if (scheduleRepository.count() > 0) return;
+
+        upsertCities(List.of("Bogotá", "Mosquera", "Funza", "Chía", "Cajicá", "Cota"));
 
         Map<String, Employee> empleados = initEmployees();
         Map<String, Service> servicios = initServices();
-
-        // Si ya hay agendas, no volver a sembrar nada más
-        if (scheduleRepository.count() > 0) return;
 
         // 1) Crear clientes con direcciones (por cascada)
         Map<String, Client> clientes = initClientsWithServiceAddresses();
@@ -175,43 +175,58 @@ public class DataInitializer {
         employeeRepository.saveAll(Arrays.asList(e1, e2, e3, e4, e5));
 
         Map<String, Employee> map = new LinkedHashMap<>();
-        map.put("E1", e1); map.put("E2", e2); map.put("E3", e3); map.put("E4", e4); map.put("E5", e5);
+        map.put("E1", e1);
+        map.put("E2", e2);
+        map.put("E3", e3);
+        map.put("E4", e4);
+        map.put("E5", e5);
         return map;
     }
 
     private Map<String, Service> initServices() {
-        Service aseoGeneral = new Service(); aseoGeneral.setDescription("Aseo General"); aseoGeneral.setHours(4); aseoGeneral.setCost(180.0);
-        Service oficinas    = new Service(); oficinas.setDescription("Aseo de Oficinas"); oficinas.setHours(3); oficinas.setCost(150.0);
-        Service vidrios     = new Service(); vidrios.setDescription("Limpieza de Vidrios"); vidrios.setHours(2); vidrios.setCost(120.0);
+        Service aseoGeneral = new Service();
+        aseoGeneral.setDescription("Aseo General");
+        aseoGeneral.setHours(4);
+        aseoGeneral.setCost(180.0);
+        Service oficinas = new Service();
+        oficinas.setDescription("Aseo de Oficinas");
+        oficinas.setHours(3);
+        oficinas.setCost(150.0);
+        Service vidrios = new Service();
+        vidrios.setDescription("Limpieza de Vidrios");
+        vidrios.setHours(2);
+        vidrios.setCost(120.0);
         serviceRepository.saveAll(Arrays.asList(aseoGeneral, oficinas, vidrios));
         Map<String, Service> map = new LinkedHashMap<>();
-        map.put("ASEO", aseoGeneral); map.put("OFICINA", oficinas); map.put("VIDRIOS", vidrios);
+        map.put("ASEO", aseoGeneral);
+        map.put("OFICINA", oficinas);
+        map.put("VIDRIOS", vidrios);
         return map;
     }
 
     private Map<String, Client> initClientsWithServiceAddresses() {
         Client c1 = new Client("900527406", "NIT", "Padilla", "& Compañia", "3187219976", null);
-        c1.getAddresses().add(new Address("Calle 6 Sur #15A-39, Cond. Fortaleza San Telmo, Casa 13, Vereda Canelón", "Cajicá", "Sitio de servicio"){{
+        c1.getAddresses().add(new Address("Calle 6 Sur #15A-39, Cond. Fortaleza San Telmo, Casa 13, Vereda Canelón", "Cajicá", "Sitio de servicio") {{
             setClient(c1);
         }});
 
         Client c2 = new Client("860532081", "NIT", "Halcon", "Agroindustrial SAS", "3219268372", null);
-        c2.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 512", "Chía", "Sitio de servicio"){{
+        c2.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 512", "Chía", "Sitio de servicio") {{
             setClient(c2);
         }});
 
         Client c3 = new Client("901199585", "NIT", "DVA", "", "3185864395", null);
-        c3.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 514", "Chía", "Sitio de servicio"){{
+        c3.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 514", "Chía", "Sitio de servicio") {{
             setClient(c3);
         }});
 
         Client c4 = new Client("900603565", "NIT", "Dissertum", "Financial", "3102211872", null);
-        c4.getAddresses().add(new Address("Km 1.5 Vía Cajicá - Chía, Centro Empresarial OXUS Of. 207", "Chía", "Sitio de servicio"){{
+        c4.getAddresses().add(new Address("Km 1.5 Vía Cajicá - Chía, Centro Empresarial OXUS Of. 207", "Chía", "Sitio de servicio") {{
             setClient(c4);
         }});
 
         Client c5 = new Client("832007178", "NIT", "Multiglobal", "", "3138161441", null);
-        c5.getAddresses().add(new Address("Parque Industrial Santo Domingo, Lote 9 Manzana H, Variante de Madrid", "Mosquera", "Sitio de servicio"){{
+        c5.getAddresses().add(new Address("Parque Industrial Santo Domingo, Lote 9 Manzana H, Variante de Madrid", "Mosquera", "Sitio de servicio") {{
             setClient(c5);
         }});
 
