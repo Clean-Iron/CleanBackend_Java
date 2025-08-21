@@ -49,4 +49,9 @@ public class ClientController {
         return ResponseEntity.ok(clientService.updateClient(id, updatedClient));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteClient(@PathVariable("id") String id) {
+        return ResponseEntity.ok(clientService.deleteClient(id));
+    }
+
 }
