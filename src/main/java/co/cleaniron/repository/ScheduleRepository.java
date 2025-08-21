@@ -110,8 +110,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             """)
     List<Object[]> findServicesByDocAndDateRange(
             @Param("doc") String doc,
-            @Param("fromDate") java.time.LocalDate fromDate,
-            @Param("toDate") java.time.LocalDate toDate
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
     );
 
     // Mantiene exactamente los parámetros que ya recibes:
@@ -120,8 +120,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     ) {
         int y = Integer.parseInt(year);
         int m = Integer.parseInt(month);
-        java.time.LocalDate from = java.time.LocalDate.of(y, m, 1);
-        java.time.LocalDate to = from.plusMonths(1);
+        LocalDate from = LocalDate.of(y, m, 1);
+        LocalDate to = from.plusMonths(1);
         return findServicesByDocAndDateRange(doc, from, to);
     }
 

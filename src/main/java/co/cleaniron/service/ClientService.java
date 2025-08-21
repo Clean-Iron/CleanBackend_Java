@@ -100,6 +100,15 @@ public class ClientService {
         return false;
     }
 
+    @Transactional
+    public boolean deleteClient(String document) {
+        if (!clientRepository.existsById(document)) {
+            return false;
+        }
+        clientRepository.deleteById(document);
+        return true;
+    }
+
     private ClientDto toDTO(Client c) {
         Set<AddressDto> addrs = c.getAddresses().stream()
                 .map(a -> new AddressDto(a.getId(), a.getAddress(), a.getCity(), a.getDescription()))

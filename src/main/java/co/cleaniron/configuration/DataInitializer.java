@@ -30,7 +30,7 @@ public class DataInitializer {
         // Si ya hay agendas, no volver a sembrar nada más
         if (scheduleRepository.count() > 0) return;
 
-        upsertCities(List.of("Bogotá", "Mosquera", "Funza", "Chía", "Cajicá", "Cota"));
+        upsertCities(List.of("Bogotá", "Mosquera", "Funza", "Chía", "Cajicá", "Cota", "Madrid"));
 
         Map<String, Employee> empleados = initEmployees();
         Map<String, Service> servicios = initServices();
