@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -55,6 +56,7 @@ public class ClientService {
         existingClient.setSurname(updatedClient.getSurname());
         existingClient.setPhone(updatedClient.getPhone());
         existingClient.setEmail(updatedClient.getEmail());
+        existingClient.setComments(updatedClient.getComments());
 
         // sincronizar direcciones
         if (updatedClient.getAddresses() != null) {
@@ -85,9 +87,6 @@ public class ClientService {
             toRemove.forEach(existing::remove);
         }
 
-        // no necesitas llamar a save() si la entidad está managed,
-        // pero puedes dejarlo si quieres explícito:
-        clientRepository.save(existingClient);
         return true;
     }
 
@@ -112,8 +111,8 @@ public class ClientService {
     private ClientDto toDTO(Client c) {
         Set<AddressDto> addrs = c.getAddresses().stream()
                 .map(a -> new AddressDto(a.getId(), a.getAddress(), a.getCity(), a.getDescription()))
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
         return new ClientDto(c.getDocument(), c.getTypeId(), c.getName(), c.getSurname(),
-                c.getPhone(), c.getEmail(), addrs);
+                c.getPhone(), c.getEmail(), c.getComments() ,addrs);
     }
 }
