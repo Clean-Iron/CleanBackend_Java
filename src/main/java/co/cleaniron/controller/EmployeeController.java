@@ -33,7 +33,7 @@ public class EmployeeController {
         return employeeService.getAvailabilityEmployees(date, startHour, endHour, city);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable String id) {
         return employeeService.getEmployeeById(id);
     }
@@ -54,8 +54,8 @@ public class EmployeeController {
     }
 
     @PatchMapping("/update/{id}")
-    public Employee updateEmployeePartially(@PathVariable String id, @RequestBody Map<String, Object> updates) {
-        return employeeService.updateEmployeePartially(id, updates);
+    public Boolean updateEmployee(@PathVariable String id, @RequestBody Employee update) {
+        return employeeService.updateEmployee(id, update);
     }
 
     @DeleteMapping("/delete/{id}")

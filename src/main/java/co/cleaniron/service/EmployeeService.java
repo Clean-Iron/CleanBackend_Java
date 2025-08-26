@@ -28,46 +28,39 @@ public class EmployeeService {
                 .orElseThrow(() -> new NoSuchElementException("Empleado no encontrado con ID: " + id));
     }
 
-    public List<Employee> getEmployeeByCity(String city){
+    public List<Employee> getEmployeeByCity(String city) {
         return employeeRepository.findEmployeesByCity(city);
     }
 
-    public List<Employee> getAllEmployees(){
+    public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    public List<Employee> getAvailabilityEmployees(LocalDate date, LocalTime startHour, LocalTime endHour, String city){
+    public List<Employee> getAvailabilityEmployees(LocalDate date, LocalTime startHour, LocalTime endHour, String city) {
         return employeeRepository.findAvailableEmployeesByDateStartHourEndHourCity(date, startHour, endHour, city);
     }
 
-    public void createNewEmployee(Employee employee){
+    public void createNewEmployee(Employee employee) {
         employeeRepository.save(employee);
     }
 
-    public Employee updateEmployeePartially(String id, Map<String, Object> updates) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Empleado no encontrado con ID: " + id));
+    @Transactional
+    public boolean updateEmployee(String document, Employee updated) {
+        Employee e = employeeRepository.findById(document).orElse(null);
+        if (e == null) return false;
 
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "name" -> employee.setName((String) value);
-                case "surname" -> employee.setSurname((String) value);
-                case "email" -> employee.setEmail((String) value);
-                case "phone" -> employee.setPhone((String) value);
-                case "addressResidence" -> employee.setAddressResidence((String) value);
-                case "city" -> employee.setCity((String) value);
-                case "position" -> employee.setPosition((String) value);
-                case "state" -> employee.setState((Boolean) value);
-                case "fechaIngreso", "entryDate" -> {
-                    if (value != null) {
-                        employee.setEntryDate(LocalDate.parse((String) value));
-                    }
-                }
-                // Agrega más campos si necesitas
-            }
-        });
+        if (updated.getName() != null) e.setName(updated.getName());
+        if (updated.getSurname() != null) e.setSurname(updated.getSurname());
+        if (updated.getPhone() != null) e.setPhone(updated.getPhone());
+        if (updated.getEmail() != null) e.setEmail(updated.getEmail());
+        if (updated.getAddressResidence() != null) e.setAddressResidence(updated.getAddressResidence());
+        if (updated.getCity() != null) e.setCity(updated.getCity());
+        if (updated.getEntryDate() != null) e.setEntryDate(updated.getEntryDate());
+        if (updated.getPosition() != null) e.setPosition(updated.getPosition());
+        e.setState(updated.isState());
+        if (updated.getComments() != null) e.setComments(updated.getComments());
 
-        return employeeRepository.save(employee);
+        return true;
     }
 
     @Transactional
@@ -75,7 +68,7 @@ public class EmployeeService {
         Optional<Employee> optEmployee = employeeRepository.findById(documentNumber);
         Employee employee = optEmployee.orElse(null);
         if (employee != null) {
-            employee.setState(false); // Mark as inactive
+            employee.setState(false);
             employeeRepository.save(employee);
         }
     }

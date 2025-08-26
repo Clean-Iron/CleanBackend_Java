@@ -205,27 +205,27 @@ public class DataInitializer {
     }
 
     private Map<String, Client> initClientsWithServiceAddresses() {
-        Client c1 = new Client("900527406", "NIT", "Padilla", "& Compañia", "3187219976", null);
+        Client c1 = new Client("900527406", "NIT", "Padilla", "& Compañia", "3187219976", null, null);
         c1.getAddresses().add(new Address("Calle 6 Sur #15A-39, Cond. Fortaleza San Telmo, Casa 13, Vereda Canelón", "Cajicá", "Sitio de servicio") {{
             setClient(c1);
         }});
 
-        Client c2 = new Client("860532081", "NIT", "Halcon", "Agroindustrial SAS", "3219268372", null);
+        Client c2 = new Client("860532081", "NIT", "Halcon", "Agroindustrial SAS", "3219268372", null, null);
         c2.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 512", "Chía", "Sitio de servicio") {{
             setClient(c2);
         }});
 
-        Client c3 = new Client("901199585", "NIT", "DVA", "", "3185864395", null);
+        Client c3 = new Client("901199585", "NIT", "DVA", "", "3185864395", null, null);
         c3.getAddresses().add(new Address("KM 1.5 Vía Chía - Cajicá, Ed. OXUS Of. 514", "Chía", "Sitio de servicio") {{
             setClient(c3);
         }});
 
-        Client c4 = new Client("900603565", "NIT", "Dissertum", "Financial", "3102211872", null);
+        Client c4 = new Client("900603565", "NIT", "Dissertum", "Financial", "3102211872", null, null);
         c4.getAddresses().add(new Address("Km 1.5 Vía Cajicá - Chía, Centro Empresarial OXUS Of. 207", "Chía", "Sitio de servicio") {{
             setClient(c4);
         }});
 
-        Client c5 = new Client("832007178", "NIT", "Multiglobal", "", "3138161441", null);
+        Client c5 = new Client("832007178", "NIT", "Multiglobal", "", "3138161441", null, null);
         c5.getAddresses().add(new Address("Parque Industrial Santo Domingo, Lote 9 Manzana H, Variante de Madrid", "Mosquera", "Sitio de servicio") {{
             setClient(c5);
         }});

@@ -18,35 +18,39 @@ import java.util.Set;
 @Setter
 public class Client {
     @Id
-    @Column(name="NumeroDocumento", nullable = false)
+    @Column(name = "NumeroDocumento", nullable = false)
     private String document;
 
-    @Column(name="TipoDocumento", nullable = false)
+    @Column(name = "TipoDocumento", nullable = false)
     private String typeId;
 
-    @Column(name="Nombres")
+    @Column(name = "Nombres")
     private String name;
 
-    @Column(name="Apellidos")
+    @Column(name = "Apellidos")
     private String surname;
 
-    @Column(name="NumeroContacto")
+    @Column(name = "NumeroContacto")
     private String phone;
 
-    @Column(name="CorreoElectronico")
+    @Column(name = "CorreoElectronico")
     private String email;
+
+    @Column(name = "Comentarios")
+    private String comments;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
     private Set<Address> addresses = new HashSet<>();
 
-    public Client(String document, String typeId, String name, String surname, String phone, String email) {
+    public Client(String document, String typeId, String name, String surname, String phone, String email, String comments) {
         this.document = document;
         this.typeId = typeId;
         this.name = name;
         this.surname = surname;
         this.phone = phone;
         this.email = email;
+        this.comments = comments;
         this.addresses = new HashSet<>();
     }
 }

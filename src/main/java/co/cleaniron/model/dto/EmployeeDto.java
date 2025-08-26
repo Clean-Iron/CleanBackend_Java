@@ -1,7 +1,5 @@
 package co.cleaniron.model.dto;
 
-import java.util.Objects;
-
 public record EmployeeDto(
         String employeeDocument,
         String employeeName,
