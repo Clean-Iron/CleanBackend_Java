@@ -20,6 +20,11 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @GetMapping("/{id}")
+    public Employee getEmployeeById(@PathVariable String id) {
+        return employeeService.getEmployeeById(id);
+    }
+
     /**
      * Buscar empleados disponibles por fecha, horario y ciudad
      */
@@ -31,11 +36,6 @@ public class EmployeeController {
             @RequestParam String city) {
 
         return employeeService.getAvailabilityEmployees(date, startHour, endHour, city);
-    }
-
-    @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable String id) {
-        return employeeService.getEmployeeById(id);
     }
 
     @GetMapping("/city/{city}")

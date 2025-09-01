@@ -114,7 +114,49 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("toDate") LocalDate toDate
     );
 
-    // Mantiene exactamente los parámetros que ya recibes:
+    @Query("""
+                SELECT s.id,
+                       c.document,
+                       s.date,
+                       s.startHour,
+                       s.endHour,
+                       s.totalServiceHours,
+                       s.state,
+                       s.comments,
+                       s.recurrenceType,
+                       c.name,
+                       c.surname,
+                       a.city,
+                       a.address,
+                       sv.id,
+                       sv.description,
+                       e.document,
+                       e.name,
+                       e.surname
+                FROM Schedule s
+                  JOIN s.client c
+                  JOIN s.serviceAddress a
+                  LEFT JOIN s.services sv
+                  LEFT JOIN s.employees e
+                WHERE s.date >= :fromDate
+                  AND s.date  < :toDate
+                  AND ( :employeeCity IS NULL OR :employeeCity = ''
+                        OR EXISTS (
+                            SELECT 1
+                            FROM Schedule s2
+                              JOIN s2.employees e2
+                            WHERE s2.id = s.id
+                              AND UPPER(TRIM(e2.city)) = UPPER(TRIM(:employeeCity))
+                        )
+                      )
+                ORDER BY s.date, s.id, e.surname, e.name
+            """)
+    List<Object[]> findServicesByEmployeeCityByMonth(
+            @Param("employeeCity") String employeeCity,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
+
     default List<Object[]> findServicesFromEmployeeByMonth(
             String doc, String year, String month
     ) {
@@ -125,4 +167,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         return findServicesByDocAndDateRange(doc, from, to);
     }
 
+    default List<Object[]> findServicesByCityAndMonth(
+            String city, String year, String month
+    ) {
+        int y = Integer.parseInt(year);
+        int m = Integer.parseInt(month);
+        LocalDate from = LocalDate.of(y, m, 1);
+        LocalDate to = from.plusMonths(1);
+        String normalizedCity = (city != null && !city.trim().isEmpty()) ? city : null;
+        return findServicesByEmployeeCityByMonth(normalizedCity, from, to);
+    }
 }
