@@ -66,10 +66,6 @@ public class EmployeeService {
     @Transactional
     public void deactivateEmployee(String documentNumber) {
         Optional<Employee> optEmployee = employeeRepository.findById(documentNumber);
-        Employee employee = optEmployee.orElse(null);
-        if (employee != null) {
-            employee.setState(false);
-            employeeRepository.save(employee);
-        }
+        employeeRepository.delete(optEmployee.get());
     }
 }

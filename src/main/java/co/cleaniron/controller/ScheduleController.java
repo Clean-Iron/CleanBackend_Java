@@ -24,8 +24,8 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public void createNewSchedule(@RequestBody Schedule schedule) {
-        scheduleService.createSchedule(schedule);
+    public void createNewSchedule(@RequestBody List<Schedule> schedules) {
+        scheduleService.createSchedule(schedules);
     }
 
     @GetMapping("/servicesEmployee/{employeeDoc}")
@@ -37,10 +37,15 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, year, month));
     }
 
-    /**
-     * 1) Devuelve TODOS los servicios de la fecha indicada,
-     * sin importar ciudad o cliente.
-     */
+    @GetMapping("/servicesCity/{city}")
+    public ResponseEntity<List<ScheduleDetailGroupedDto>> getServicesFromCityByMonth(
+            @PathVariable("city") String city,
+            @RequestParam("year") String year,
+            @RequestParam("month") String month
+    ) {
+        return ResponseEntity.ok(scheduleService.getServicesFromCityByMonth(city, year, month));
+    }
+
     @GetMapping("/{dateService}")
     public ResponseEntity<List<ScheduleDetailGroupedDto>> getAllByDate(
             @PathVariable("dateService") LocalDate dateService
@@ -50,11 +55,6 @@ public class ScheduleController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * 2) Devuelve los servicios de la fecha indicada,
-     * filtrando por ciudad o cliente (name + surname).
-     * Si alguno de los tres parámetros es null, se ignora ese filtro.
-     */
     @GetMapping("/{dateService}/filter")
     public ResponseEntity<List<ScheduleDetailGroupedDto>> getByDateWithFilters(
             @PathVariable("dateService") LocalDate dateService,
