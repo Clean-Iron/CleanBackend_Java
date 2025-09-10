@@ -108,8 +108,43 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
               )
             ORDER BY s.date, s.id, e.surname, e.name
             """)
-    List<Object[]> findServicesByDocAndDateRange(
+    List<Object[]> findServicesByEmployeeAndDateRange(
             @Param("doc") String doc,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
+
+    @Query("""
+            SELECT s.id,
+                   c.document,
+                   s.date,
+                   s.startHour,
+                   s.endHour,
+                   s.totalServiceHours,
+                   s.state,
+                   s.comments,
+                   s.recurrenceType,
+                   c.name,
+                   c.surname,
+                   a.city,
+                   a.address,
+                   sv.id,
+                   sv.description,
+                   e.document,
+                   e.name,
+                   e.surname
+            FROM Schedule s
+              JOIN s.client c
+              JOIN s.serviceAddress a
+              LEFT JOIN s.services sv
+              LEFT JOIN s.employees e
+            WHERE s.date >= :fromDate
+              AND s.date  < :toDate
+              AND TRIM(c.document) = TRIM(:clientDoc)
+            ORDER BY s.date, s.id, e.surname, e.name
+            """)
+    List<Object[]> findServicesByClientAndDateRange(
+            @Param("clientDoc") String clientDoc,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
     );
@@ -164,7 +199,17 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         int m = Integer.parseInt(month);
         LocalDate from = LocalDate.of(y, m, 1);
         LocalDate to = from.plusMonths(1);
-        return findServicesByDocAndDateRange(doc, from, to);
+        return findServicesByEmployeeAndDateRange(doc, from, to);
+    }
+
+    default List<Object[]> findServicesFromClientByMonth(
+            String clientDoc, String year, String month
+    ) {
+        int y = Integer.parseInt(year);
+        int m = Integer.parseInt(month);
+        LocalDate from = LocalDate.of(y, m, 1);
+        LocalDate to = from.plusMonths(1);
+        return findServicesByClientAndDateRange(clientDoc, from, to);
     }
 
     default List<Object[]> findServicesByCityAndMonth(
