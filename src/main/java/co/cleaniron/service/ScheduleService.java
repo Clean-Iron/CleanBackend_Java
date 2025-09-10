@@ -51,6 +51,22 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    public List<ScheduleDetailGroupedDto> getServicesFromClientByMonth(String doc, String year, String month) {
+        List<Object[]> results = scheduleRepository.findServicesFromClientByMonth(doc, year, month);
+        List<ScheduleDetailDateDto> scheduleDetails = results.stream()
+                .map(ScheduleDetailDateDto::new)
+                .toList();
+
+        // Agrupar por ID de agenda y combinar empleados
+        Map<Long, List<ScheduleDetailDateDto>> groupedByScheduleId = scheduleDetails.stream()
+                .collect(Collectors.groupingBy(ScheduleDetailDateDto::id));
+
+        // Convertir a DTO agrupado
+        return groupedByScheduleId.values().stream()
+                .map(this::combineScheduleWithEmployees)
+                .collect(Collectors.toList());
+    }
+
     public List<ScheduleDetailGroupedDto> getServicesFromCityByMonth(String city, String year, String month) {
         List<Object[]> results = scheduleRepository.findServicesByCityAndMonth(city, year, month);
         List<ScheduleDetailDateDto> scheduleDetails = results.stream()

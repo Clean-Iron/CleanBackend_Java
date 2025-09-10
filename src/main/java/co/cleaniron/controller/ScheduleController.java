@@ -37,6 +37,15 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getServicesFromEmployeeByMonth(employeeDoc, year, month));
     }
 
+    @GetMapping("/servicesClient/{clientDoc}")
+    public ResponseEntity<List<ScheduleDetailGroupedDto>> getServicesFromClientByMonth(
+            @PathVariable("clientDoc") String clientDoc,
+            @RequestParam("year") String year,
+            @RequestParam("month") String month
+    ) {
+        return ResponseEntity.ok(scheduleService.getServicesFromClientByMonth(clientDoc, year, month));
+    }
+
     @GetMapping("/servicesCity/{city}")
     public ResponseEntity<List<ScheduleDetailGroupedDto>> getServicesFromCityByMonth(
             @PathVariable("city") String city,
