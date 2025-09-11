@@ -1,7 +1,10 @@
 package co.cleaniron.repository;
 
 import co.cleaniron.model.Schedule;
+import co.cleaniron.model.ServiceState;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +14,24 @@ import java.util.List;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+
+    @Query(value = "SELECT 1", nativeQuery = true)
+    int ping();
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("""
+        update Schedule s
+           set s.state = :completed
+         where s.date < :today
+           and s.state = :scheduled
+    """)
+    int bulkCompletePast(
+            @Param("today") LocalDate today,
+            @Param("scheduled") ServiceState scheduled,
+            @Param("completed") ServiceState completed
+    );
+
     @Query("""
                 SELECT a.id,
                        c.document,
