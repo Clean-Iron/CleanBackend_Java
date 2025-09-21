@@ -1,6 +1,7 @@
 package co.cleaniron.controller;
 
 import co.cleaniron.model.Schedule;
+import co.cleaniron.model.dto.EmployeeDailyHoursGroupedDto;
 import co.cleaniron.model.dto.ScheduleDetailGroupedDto;
 import co.cleaniron.model.dto.ScheduleUpdateDto;
 import co.cleaniron.service.ScheduleService;
@@ -73,6 +74,16 @@ public class ScheduleController {
     ) {
         List<ScheduleDetailGroupedDto> result =
                 scheduleService.getScheduleDetailsByDateCityClient(dateService, city, name, surname);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/servicesByMonth")
+    public ResponseEntity<List<EmployeeDailyHoursGroupedDto>> getServicesEmployees(
+            @RequestParam("year") String year,
+            @RequestParam("month") String month
+    ) {
+        List<EmployeeDailyHoursGroupedDto> result =
+                scheduleService.getScheduleEmployeesByMonth(year, month);
         return ResponseEntity.ok(result);
     }
 

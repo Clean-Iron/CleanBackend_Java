@@ -15,16 +15,23 @@ public record ScheduleUpdateDto(
         @JsonFormat(pattern = "HH:mm:ss") LocalTime endHour,
         String comments,
         ServiceState state,
+        Integer breakMinutes,              // ← NUEVO: descanso en minutos (0–60)
         Set<String> employeeDocuments,
         Set<Integer> idServices
 ) {
-    // Compact constructor: normaliza y valida
     public ScheduleUpdateDto {
+        // Normalizaciones
         employeeDocuments = employeeDocuments == null ? Set.of() : Set.copyOf(employeeDocuments);
         idServices = idServices == null ? Set.of() : Set.copyOf(idServices);
 
+        // Validación de horas
         if (startHour != null && endHour != null && !endHour.isAfter(startHour)) {
             throw new IllegalArgumentException("endHour debe ser posterior a startHour");
         }
+
+        // Descanso: default 0 y clamp al rango [0,60]
+        if (breakMinutes == null) breakMinutes = 0;
+        if (breakMinutes < 0) breakMinutes = 0;
+        if (breakMinutes > 60) breakMinutes = 60;
     }
 }
