@@ -9,6 +9,7 @@ public record ScheduleDetailDateDto(
         LocalDate serviceDate,
         LocalTime startHour,
         LocalTime endHour,
+        Integer breakMinutes,
         Double totalServiceHours,
         String state,
         String comments,
@@ -32,19 +33,20 @@ public record ScheduleDetailDateDto(
                 castToLocalDate(row[2]),
                 castToLocalTime(row[3]),
                 castToLocalTime(row[4]),
-                castToDouble(row[5]),
-                castToString(row[6]),
+                castToInteger(row[5]),
+                castToDouble(row[6]),
                 castToString(row[7]),
                 castToString(row[8]),
                 castToString(row[9]),
                 castToString(row[10]),
                 castToString(row[11]),
                 castToString(row[12]),
-                castToInteger(row[13]),
-                castToString(row[14]),
+                castToString(row[13]),
+                castToInteger(row[14]),
                 castToString(row[15]),
                 castToString(row[16]),
-                castToString(row[17])
+                castToString(row[17]),
+                castToString(row[18])
         );
     }
 

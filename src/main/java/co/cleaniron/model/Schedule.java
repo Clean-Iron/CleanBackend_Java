@@ -1,10 +1,13 @@
 package co.cleaniron.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Duration;
@@ -62,7 +65,12 @@ public class Schedule {
     @Column(name = "Hora_Fin", nullable = false)
     private LocalTime endHour;
 
-    // Opción 1: Campo calculado que se guarda en la base de datos
+    @Min(0) @Max(60)
+    @Column(name = "Tiempo_Descanso", nullable = false)
+    @ColumnDefault("0")
+    private Integer breakMinutes = 0;
+
+    /** Horas netas del servicio = (fin - inicio) - descanso (en horas). */
     @Column(name = "Total_Horas_Servicio")
     private Double totalServiceHours;
 
@@ -77,33 +85,48 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private RecurrenceType recurrenceType;
 
-    // Formateadores
+    // === Formateadores para businessKey ===
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // YYYYMMDD
     private static final DateTimeFormatter HOUR_FMT = DateTimeFormatter.ofPattern("HHmm");
 
-    /**
-     * Un único callback para PrePersist y PreUpdate:
-     * - Genera businessKey si es nueva.
-     * - Calcula totalServiceHours siempre.
-     */
+    // Setter defensivo por si viene null desde DTO/mapper
+    public void setBreakMinutes(Integer minutes) {
+        if (minutes == null) minutes = 0;
+        if (minutes < 0) minutes = 0;
+        if (minutes > 60) minutes = 60;
+        this.breakMinutes = minutes;
+    }
+
     @PrePersist
     @PreUpdate
     private void prepareEntity() {
-        // 1️⃣ businessKey (solo si aún no existe)
-        String cityCode = serviceAddress.getCity()
-                .replaceAll("\\s+", "")
-                .substring(0, Math.min(3, serviceAddress.getCity().length()))
-                .toUpperCase();
-        String dateKey = date.format(DATE_FMT);
-        String hours = startHour.format(HOUR_FMT) + "-" + endHour.format(HOUR_FMT);
-        String client = getClient().getDocument();
+        // Normaliza descanso
+        if (breakMinutes == null) breakMinutes = 0;
+        if (breakMinutes < 0) breakMinutes = 0;
+        if (breakMinutes > 60) breakMinutes = 60;
 
-        this.businessKey = String.join("_", cityCode, dateKey, hours, client);
+        // 1) businessKey (recalcula con ciudad-fecha-horas-documento)
+        if (serviceAddress != null && serviceAddress.getCity() != null
+                && date != null && startHour != null && endHour != null
+                && client != null && client.getDocument() != null) {
 
-        // 2️⃣ totalServiceHours
+            String city = serviceAddress.getCity();
+            String cityCode = city.replaceAll("\\s+", "")
+                    .substring(0, Math.min(3, city.length()))
+                    .toUpperCase();
+
+            String dateKey = date.format(DATE_FMT);
+            String hours = startHour.format(HOUR_FMT) + "-" + endHour.format(HOUR_FMT);
+            String clientDoc = client.getDocument();
+
+            this.businessKey = String.join("_", cityCode, dateKey, hours, clientDoc);
+        }
+
+        // 2) totalServiceHours = neto en horas
         if (startHour != null && endHour != null) {
-            Duration dur = Duration.between(startHour, endHour);
-            this.totalServiceHours = dur.toMinutes() / 60.0;
+            long grossMinutes = Duration.between(startHour, endHour).toMinutes();
+            long netMinutes = Math.max(0, grossMinutes - breakMinutes);
+            this.totalServiceHours = netMinutes / 60.0;
         }
     }
 }

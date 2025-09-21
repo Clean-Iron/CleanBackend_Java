@@ -21,11 +21,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("""
-        update Schedule s
-           set s.state = :completed
-         where s.date < :today
-           and s.state = :scheduled
-    """)
+                update Schedule s
+                   set s.state = :completed
+                 where s.date < :today
+                   and s.state = :scheduled
+            """)
     int bulkCompletePast(
             @Param("today") LocalDate today,
             @Param("scheduled") ServiceState scheduled,
@@ -38,6 +38,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                        a.date,
                        a.startHour,
                        a.endHour,
+                       a.breakMinutes,
                        a.totalServiceHours,
                        a.state,
                        a.comments,
@@ -66,6 +67,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                        a.date,
                        a.startHour,
                        a.endHour,
+                       a.breakMinutes,
                        a.totalServiceHours,
                        a.state,
                        a.comments,
@@ -103,6 +105,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    s.date,
                    s.startHour,
                    s.endHour,
+                   s.breakMinutes,
                    s.totalServiceHours,
                    s.state,
                    s.comments,
@@ -141,6 +144,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    s.date,
                    s.startHour,
                    s.endHour,
+                   s.breakMinutes,
                    s.totalServiceHours,
                    s.state,
                    s.comments,
@@ -176,6 +180,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                        s.date,
                        s.startHour,
                        s.endHour,
+                       s.breakMinutes,
                        s.totalServiceHours,
                        s.state,
                        s.comments,
@@ -213,6 +218,25 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("toDate") LocalDate toDate
     );
 
+    @Query("""
+            SELECT 
+                e.document AS employeeId,
+                CONCAT(e.name, ' ', COALESCE(e.surname, '')) AS employeeName,
+                s.date AS date,
+                SUM(s.totalServiceHours) AS totalHours
+            FROM Schedule s
+            JOIN s.employees e
+            JOIN s.client c
+            WHERE s.date >= :from AND s.date < :to
+              AND c.document <> '0000000000'
+            GROUP BY e.document, e.name, e.surname, s.date
+            ORDER BY e.name ASC, e.surname ASC, s.date ASC
+            """)
+    List<Object[]> findServicesEmployeesByMonth(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
+
     default List<Object[]> findServicesFromEmployeeByMonth(
             String doc, String year, String month
     ) {
@@ -242,5 +266,15 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         LocalDate to = from.plusMonths(1);
         String normalizedCity = (city != null && !city.trim().isEmpty()) ? city : null;
         return findServicesByEmployeeCityByMonth(normalizedCity, from, to);
+    }
+
+    default List<Object[]> findServicesFromEmployeesByMonth(
+            String year, String month
+    ) {
+        int y = Integer.parseInt(year);
+        int m = Integer.parseInt(month);
+        LocalDate from = LocalDate.of(y, m, 1);
+        LocalDate to = from.plusMonths(1);
+        return findServicesEmployeesByMonth(from, to);
     }
 }

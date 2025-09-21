@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,6 +114,49 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    public List<EmployeeDailyHoursGroupedDto> getScheduleEmployeesByMonth(String year, String month) {
+        List<Object[]> rows = scheduleRepository.findServicesFromEmployeesByMonth(year, month);
+        return groupEmployeeDailyHours(rows);
+    }
+
+    // === PRIVADO: agrupa {doc(String), nombre(String), fecha(LocalDate), horas(Double)} ===
+    private List<EmployeeDailyHoursGroupedDto> groupEmployeeDailyHours(List<Object[]> rows) {
+        // Agrupar por documento (preserva el orden de llegada)
+        Map<String, List<Object[]>> byDoc = rows.stream()
+                .collect(Collectors.groupingBy(
+                        r -> (String) r[0],
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        // Construir la lista final (un empleado con su lista de días/horas)
+        return byDoc.entrySet().stream()
+                .map(entry -> {
+                    String doc = entry.getKey();
+                    List<Object[]> empRows = entry.getValue();
+
+                    String name = (String) empRows.get(0)[1];
+
+                    // Consolidar horas por fecha (si por alguna razón hay varias filas mismo día, se suman)
+                    Map<LocalDate, Double> hoursByDate = new TreeMap<>(); // fechas ordenadas asc
+                    for (Object[] r : empRows) {
+                        LocalDate date = (LocalDate) r[2];
+                        Double hours   = (Double) r[3];
+                        hoursByDate.merge(date, hours, Double::sum);
+                    }
+
+                    List<DayHoursDto> days = hoursByDate.entrySet().stream()
+                            .map(e -> new DayHoursDto(e.getKey(), e.getValue()))
+                            .toList();
+
+                    return new EmployeeDailyHoursGroupedDto(doc, name, days);
+                })
+                // (Opcional) ordenar por nombre
+                .sorted(Comparator.comparing(EmployeeDailyHoursGroupedDto::employeeName,
+                        Comparator.nullsLast(String::compareToIgnoreCase)))
+                .toList();
+    }
+
     private ScheduleDetailGroupedDto combineScheduleWithEmployees(List<ScheduleDetailDateDto> scheduleGroup) {
         // Tomar el primer registro como base (todos tienen la misma info del servicio)
         ScheduleDetailDateDto base = scheduleGroup.get(0);
@@ -160,6 +200,10 @@ public class ScheduleService {
 
         if (dto.state() != null) {
             schedule.setState(dto.state());
+        }
+
+        if (dto.breakMinutes() != null) {
+            schedule.setBreakMinutes(dto.breakMinutes());
         }
 
         if (dto.employeeDocuments() != null) {

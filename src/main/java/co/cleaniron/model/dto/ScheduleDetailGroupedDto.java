@@ -15,6 +15,7 @@ public class ScheduleDetailGroupedDto {
     private LocalDate serviceDate;
     private LocalTime startHour;
     private LocalTime endHour;
+    private Integer breakMinutes;
     private double totalServiceHours;
     private String state;
     private String comments;
@@ -35,6 +36,7 @@ public class ScheduleDetailGroupedDto {
         this.serviceDate = dto.serviceDate();
         this.startHour = dto.startHour();
         this.endHour = dto.endHour();
+        this.breakMinutes = dto.breakMinutes();
         this.totalServiceHours = dto.totalServiceHours();
         this.state = dto.state();
         this.comments = dto.comments();
