@@ -36,6 +36,9 @@ public class Client {
     @Column(name = "CorreoElectronico")
     private String email;
 
+    @Column(name = "Estado")
+    private boolean state;
+
     @Column(name = "Comentarios")
     private String comments;
 

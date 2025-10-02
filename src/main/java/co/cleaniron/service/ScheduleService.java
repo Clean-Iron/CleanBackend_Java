@@ -119,43 +119,43 @@ public class ScheduleService {
         return groupEmployeeDailyHours(rows);
     }
 
-    // === PRIVADO: agrupa {doc(String), nombre(String), fecha(LocalDate), horas(Double)} ===
     private List<EmployeeDailyHoursGroupedDto> groupEmployeeDailyHours(List<Object[]> rows) {
         // Agrupar por documento (preserva el orden de llegada)
         Map<String, List<Object[]>> byDoc = rows.stream()
                 .collect(Collectors.groupingBy(
-                        r -> (String) r[0],
+                        r -> (String) r[0],          // employeeId
                         LinkedHashMap::new,
                         Collectors.toList()
                 ));
 
-        // Construir la lista final (un empleado con su lista de días/horas)
+        // Construir la lista final (un empleado con su lista de "servicios por día")
         return byDoc.entrySet().stream()
                 .map(entry -> {
                     String doc = entry.getKey();
                     List<Object[]> empRows = entry.getValue();
 
+                    // Nombre del empleado viene de la primera fila del grupo
                     String name = (String) empRows.get(0)[1];
 
-                    // Consolidar horas por fecha (si por alguna razón hay varias filas mismo día, se suman)
-                    Map<LocalDate, Double> hoursByDate = new TreeMap<>(); // fechas ordenadas asc
-                    for (Object[] r : empRows) {
-                        LocalDate date = (LocalDate) r[2];
-                        Double hours   = (Double) r[3];
-                        hoursByDate.merge(date, hours, Double::sum);
-                    }
-
-                    List<DayHoursDto> days = hoursByDate.entrySet().stream()
-                            .map(e -> new DayHoursDto(e.getKey(), e.getValue()))
+                    // Mapear cada fila a DayHoursDto SIN consolidar
+                    List<DayHoursDto> days = empRows.stream()
+                            .map(r -> {
+                                LocalDate date = (LocalDate) r[2];                            // date
+                                String client = (String) r[3];                               // clientName
+                                Double hours = r[4] == null ? 0d : ((Number) r[4]).doubleValue(); // hours
+                                return new DayHoursDto(client, date, hours);
+                            })
+                            // ordena por fecha y luego por nombre de cliente (opcional)
+                            .sorted(Comparator
+                                    .comparing(DayHoursDto::date)
+                                    .thenComparing(DayHoursDto::client, Comparator.nullsLast(String::compareToIgnoreCase)))
                             .toList();
 
                     return new EmployeeDailyHoursGroupedDto(doc, name, days);
                 })
-                // (Opcional) ordenar por nombre
-                .sorted(Comparator.comparing(EmployeeDailyHoursGroupedDto::employeeName,
-                        Comparator.nullsLast(String::compareToIgnoreCase)))
                 .toList();
     }
+
 
     private ScheduleDetailGroupedDto combineScheduleWithEmployees(List<ScheduleDetailDateDto> scheduleGroup) {
         // Tomar el primer registro como base (todos tienen la misma info del servicio)
