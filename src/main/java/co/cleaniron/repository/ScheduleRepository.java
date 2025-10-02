@@ -219,18 +219,21 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     );
 
     @Query("""
-            SELECT 
+            SELECT
                 e.document AS employeeId,
                 CONCAT(e.name, ' ', COALESCE(e.surname, '')) AS employeeName,
                 s.date AS date,
-                SUM(s.totalServiceHours) AS totalHours
+                CONCAT(
+                    TRIM(COALESCE(c.name, '')),
+                    CASE WHEN c.surname IS NULL OR c.surname = '' THEN '' ELSE CONCAT(' ', c.surname) END
+                ) AS clientName,
+                s.totalServiceHours AS hours
             FROM Schedule s
             JOIN s.employees e
             JOIN s.client c
             WHERE s.date >= :from AND s.date < :to
               AND c.document <> '0000000000'
-            GROUP BY e.document, e.name, e.surname, s.date
-            ORDER BY e.name ASC, e.surname ASC, s.date ASC
+            ORDER BY e.name ASC, e.surname ASC, s.date ASC, c.name ASC, c.surname ASC, s.startHour ASC
             """)
     List<Object[]> findServicesEmployeesByMonth(
             @Param("from") LocalDate from,

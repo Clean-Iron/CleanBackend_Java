@@ -6,5 +6,6 @@ public record EmployeeDailyHoursGroupedDto(
         String employeeDocument,
         String employeeName,
         List<DayHoursDto> days
-) {}
+) {
+}
 
